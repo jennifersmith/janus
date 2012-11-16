@@ -8,8 +8,8 @@
                  [org.clojure/core.logic "0.6.6"]
                  [org.clojure/tools.cli "0.2.1"]
                  [org.clojure/data.xml "0.0.3"]]
-  :dev-dependencies [[swank-clojure "1.4.0-SNAPSHOT"]
-                     [clj-http-fake "0.2.3"]
-                     [midje "1.3.1"]
-                     [lein-midje "1.0.4"]]
+  :profiles {:dev {:dependencies [ [clj-http-fake "0.2.3"]
+                                   [midje "1.3.1"]]
+                   :plugins [[swank-clojure "1.4.0-SNAPSHOT"]
+                             [lein-midje "2.0.1"]]}}
   :main janus)
