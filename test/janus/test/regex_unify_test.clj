@@ -8,7 +8,7 @@
 
 (facts
   (logic/run 1 [q] (charo q \a true)) => '(\a)
-  (logic/run 1 [q] (charo q \a false)) => '(_.0))
+  (logic/run 1 [q] (charo q \a false)) => '((_.0 :- (!= _.0 \a))))
 
 (facts
   (logic/run 1 [q] (containso q '(:a :b) true)) => '(:a)
