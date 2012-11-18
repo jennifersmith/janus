@@ -23,22 +23,32 @@
 
 ;; todo; better asserts...test generative?
 
+(defn character-class [c] [{:operator :character-class :domain c}])
+
 (defn c_plus [c] [{:operator :quantification :minimum 1}
-                  [{:operator :character-class :domain c}]])
+                  [(character-class c)]])
+
+;; Basic non-regex goals
+
+(fact "A" (logic/run 1 [q] (charactero [\A] q ) ) => '(\A))
+(fact "no class" (logic/run 1 [q] (charactero [] q)) => '())
+(fact "backwards" (first (logic/run 3 [q] (charactero q \A))) => [\A])
 
 ;; min 1 is the root, one child of a character of class c
+(fact "A"
+  (logic/run 1 [q] (character-classo (character-class [\A]) q) ) => [\A])
+(comment
+  (fact "A+"
+    (->> (logic/run 20 [q] (regex-matcho ) )
+         (map #(apply str %))
+         (map #(re-matches #"A+" %))
+         (filter nil?))
+    => [])
 
-(fact "A+"
-  (->> (logic/run 20 [q] (c_plus [\A]) )
-      (map #(apply str %))
-      (map #(re-matches #"A+" %))
-      (filter nil?))
-  => [])
 
-
-(fact "B+"
-  (->> (logic/run 20 [q] (regex-matcho q (c_plus [\C])))
-      (map #(apply str %))
-      (map #(re-matches #"B+" %))
-      (filter nil?))
-  => [])
+  (fact "B+"
+    (->> (logic/run 20 [q] (regex-matcho q (c_plus [\C])))
+         (map #(apply str %))
+         (map #(re-matches #"B+" %))
+         (filter nil?))
+    => []))

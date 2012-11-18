@@ -1,5 +1,7 @@
 (ns janus.regex-unify
-  [:require [clojure.core.logic :as logic]])
+    (:refer-clojure :exclude [==])
+    (:use clojure.core.logic)
+    (:require [clojure.core.logic :as logic]))
 
 (defn make-char-set [start end]
   (vec (map char (range (int start) (inc (int end))))))
@@ -37,6 +39,31 @@
 
 ;; A+
 
+(defn charactero [character-domain match]
+  (conde
+   ((emptyo character-domain) fail)
+          ((fresh [c,r]
+                  (conso c r character-domain)
+                  (conde
+                   ((emptyo r) (== c match))
+                   ((== c match))
+                   ((charactero r match)))))))
+
+(defn character-classo [regex match]
+  (fresh [character-domain, root]
+         (firsto regex root)
+         (== root (partial-map {:domain character-domain}))
+         (charactero character-domain match)))
+
+(defn quantificationo [regex match]
+                 (fresh [minimum, root, children, child]
+                        (conso root children regex)
+                        (== root (partial-map {:minimum minimum}))
+                        (firsto children child)
+                        (== minimum 1)
+                        (fresh [head tail]
+                               (conso head tail match)
+                               (regex-matcho child head))))
 
 (defn pluso [q inner]
 (logic/all
@@ -49,7 +76,12 @@
            ((logic/== r '()))
            ((pluso r inner))))))
 
-(defn apluso [q]
-  (pluso q  #(logic/== % \A)))
-
-(defn regex-matcho [q regex]  )
+(defn regex-matcho [regex match]
+  (fresh [pm operator root children]
+         (firsto regex root)
+         (resto regex children )
+         (== pm (partial-map {:operator operator}))
+         (== pm root)
+         (matche [operator]
+                 [[:quantification] (quantificationo regex match)]
+                 [[:character-class] (character-classo regex match)])) )
