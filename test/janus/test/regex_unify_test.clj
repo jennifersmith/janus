@@ -37,18 +37,19 @@
 ;; min 1 is the root, one child of a character of class c
 (fact "A"
   (logic/run 1 [q] (character-classo (character-class [\A]) q) ) => [\A])
-(comment
-  (fact "A+"
-    (->> (logic/run 20 [q] (regex-matcho ) )
-         (map #(apply str %))
-         (map #(re-matches #"A+" %))
-         (filter nil?))
-    => [])
+(defn run-and-filter-matches [logic-fn regex]
+(->> (logic/run 20 [q] (logic-fn q))
+       (map #(apply str %))
+       (map #(re-matches regex %))
+       (filter nil?)))
+
+(fact "A+"
+  (run-and-filter-matches #(regex-matcho (c_plus \A) %) "A+") => [])
 
 
-  (fact "B+"
-    (->> (logic/run 20 [q] (regex-matcho q (c_plus [\C])))
-         (map #(apply str %))
-         (map #(re-matches #"B+" %))
-         (filter nil?))
-    => []))
+(fact "B+"
+  (->> (logic/run 20 [q] (regex-matcho q (c_plus [\C])))
+       (map #(apply str %))
+       (map #(re-matches #"B+" %))
+       (filter nil?))
+  => [])
