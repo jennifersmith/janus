@@ -15,13 +15,14 @@
                 (logic/== false found)]
                [(logic/!= nil (first sequence))
                 (logic/== q (first sequence))
-                (logic/== true found)] 
+                (logic/== true found)]
                [(if (empty? sequence)
                   logic/fail
                   (containso q (rest sequence) found))]))
 
 (defn matching-stringo [q chr-set length]
   (logic/== q (apply str (take length (repeatedly #(nth chr-set (rand-int (count chr-set))))))))
+
 
 (defn repeato [min max char-set q matched]
   (letfn [(next [length]
@@ -32,3 +33,23 @@
                          [(logic/!= length max)
                           (next (inc length))]))]
     (next min)))
+
+
+;; A+
+
+
+(defn pluso [q inner]
+(logic/all
+ (logic/fresh [h]
+        (logic/firsto q h)
+        (inner h))
+   (logic/fresh [r]
+          (logic/resto q r)
+          (logic/conde
+           ((logic/== r '()))
+           ((pluso r inner))))))
+
+(defn apluso [q]
+  (pluso q  #(logic/== % \A)))
+
+(defn regex-matcho [q regex]  )

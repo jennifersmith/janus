@@ -19,3 +19,26 @@
 
 (facts
   (count (logic/run 1 [q] (repeato 1 10 [\a \b] q true))) => 1)
+
+
+;; todo; better asserts...test generative?
+
+(defn c_plus [c] [{:operator :quantification :minimum 1}
+                  [{:operator :character-class :domain c}]])
+
+;; min 1 is the root, one child of a character of class c
+
+(fact "A+"
+  (->> (logic/run 20 [q] (c_plus [\A]) )
+      (map #(apply str %))
+      (map #(re-matches #"A+" %))
+      (filter nil?))
+  => [])
+
+
+(fact "B+"
+  (->> (logic/run 20 [q] (regex-matcho q (c_plus [\C])))
+      (map #(apply str %))
+      (map #(re-matches #"B+" %))
+      (filter nil?))
+  => [])
