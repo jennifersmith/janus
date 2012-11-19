@@ -46,10 +46,7 @@
 (fact "A+"
   (run-and-filter-matches #(regex-matcho (c_plus \A) %) "A+") => [])
 
-
 (fact "B+"
-  (->> (logic/run 20 [q] (regex-matcho q (c_plus [\C])))
-       (map #(apply str %))
-       (map #(re-matches #"B+" %))
-       (filter nil?))
-  => [])
+  (run-and-filter-matches #(regex-matcho (c_plus \B) %) "B+") => [])
+
+(fact "backwards" )

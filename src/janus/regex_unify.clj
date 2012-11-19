@@ -55,6 +55,7 @@
          (== root (partial-map {:domain character-domain}))
          (charactero character-domain match)))
 
+(declare regex-matcho)
 (defn quantificationo [regex match]
                  (fresh [minimum, root, children, child]
                         (conso root children regex)
@@ -85,3 +86,11 @@
          (matche [operator]
                  [[:quantification] (quantificationo regex match)]
                  [[:character-class] (character-classo regex match)])) )
+
+
+(defn partial-maps-dont-unify-like-i-like [q]
+  (fresh [m1 m2]
+         (== m1 (partial-map {:foo 1}))
+         (== m2 (partial-map {:baro 1}))
+         (== q m1)
+         ))
