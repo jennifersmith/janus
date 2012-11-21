@@ -83,6 +83,7 @@
          (resto regex children )
          (== pm (partial-map {:operator operator}))
          (== pm root)
+         (println operator)
          (matche [operator]
                  [[:quantification] (quantificationo regex match)]
                  [[:character-class] (character-classo regex match)])) )
@@ -91,6 +92,6 @@
 (defn partial-maps-dont-unify-like-i-like [q]
   (fresh [m1 m2]
          (== m1 (partial-map {:foo 1}))
-         (== m2 (partial-map {:baro 1}))
+         (== m2 (partial-map {:bar 1}))
          (== q m1)
          ))
