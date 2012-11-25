@@ -62,7 +62,7 @@
 (defn find-regex-matches [regex results]
   (->> results
        (map #(apply str %))
-       (map #(re-matches regex))))
+       (map #(re-matches regex %))))
 
 (fact "A+"
   (->> (logic/run 10 [q] (regex-matcho (c-plus [\A]) q))
