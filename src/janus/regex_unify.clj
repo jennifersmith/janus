@@ -42,56 +42,46 @@
 (defn charactero [character-domain match]
   (conde
    ((emptyo character-domain) fail)
-          ((fresh [c,r]
-                  (conso c r character-domain)
-                  (conde
-                   ((emptyo r) (== c match))
-                   ((== c match))
-                   ((charactero r match)))))))
+   ((fresh [c,r]
+           (conso c r character-domain)
+           (conde
+            ((== c match))
+            ((!= r '()) (charactero r match)))))))
 
-(defn character-classo [regex match]
+(defn character-classo [regex-params match]
   (fresh [character-domain, root]
-         (firsto regex root)
-         (== root (partial-map {:domain character-domain}))
+         (== regex-params (partial-map {:domain character-domain}))
          (charactero character-domain match)))
 
-(declare regex-matcho)
-(defn quantificationo [regex match]
-                 (fresh [minimum, root, children, child]
-                        (conso root children regex)
-                        (== root (partial-map {:minimum minimum}))
-                        (firsto children child)
-                        (== minimum 1)
-                        (fresh [head tail]
-                               (conso head tail match)
-                               (regex-matcho child head))))
-
-(defn pluso [q inner]
+(declare regex-matcho
+)
+(defn pluso [inner match]
 (logic/all
  (logic/fresh [h]
-        (logic/firsto q h)
-        (inner h))
+        (logic/firsto match h)
+        (regex-matcho inner h))
    (logic/fresh [r]
-          (logic/resto q r)
+          (logic/resto match r)
           (logic/conde
            ((logic/== r '()))
-           ((pluso r inner))))))
+           ((pluso inner r))))))
+
+(defn quantificationo [regex-params match]
+                 (fresh [minimum, children, child]
+                        (== regex-params
+                            (partial-map
+                             {:minimum minimum :children children}))
+                        (firsto children child)
+                        (pluso child match)))
+
 
 (defn regex-matcho [regex match]
-  (fresh [pm operator root children]
-         (firsto regex root)
-         (resto regex children )
-         (== pm (partial-map {:operator operator}))
-         (== pm root)
-         (println operator)
+  (fresh [pm operator params]
+         (== pm
+             (partial-map
+              {:operator operator
+               :params params}))
+         (== regex pm)
          (matche [operator]
-                 [[:quantification] (quantificationo regex match)]
-                 [[:character-class] (character-classo regex match)])) )
-
-
-(defn partial-maps-dont-unify-like-i-like [q]
-  (fresh [m1 m2]
-         (== m1 (partial-map {:foo 1}))
-         (== m2 (partial-map {:bar 1}))
-         (== q m1)
-         ))
+                 [[:quantification] (quantificationo params match)]
+                 [[:character-class] (character-classo params match)])))
