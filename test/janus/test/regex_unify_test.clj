@@ -36,22 +36,6 @@
                      (with-children (character-class c))))
 
 
-
-;; Basic non-regex goal
-(fact "no class" (logic/run 1 [q] (charactero [] q)) => '())
-(fact "backwards"
-  (logic/lfirst (first (logic/run 1 [q] (charactero q \A))))
-  => \A)
-
-(fact "A"
-  (logic/run 20 [q] (charactero  [\A] q))
-  => [\A])
-
-(fact "[AB]"
-  (logic/run 20 [q]
-             (charactero [\A \B] q))
-     => [\A \B])
-
 (defn run-logic [logic-fn regex]
 (let [results (logic/run 20 [q] (logic-fn q))]
 (->> results
@@ -61,9 +45,40 @@
 
 (defn find-regex-matches [regex results]
   (->> results
+       (map flatten)
        (map #(apply str %))
        (map #(re-matches regex %))))
+
+;; basically put it into the weird format my logic program spitting out
+(defn logicify-string [s]
+  (->> (seq s)
+       (map vector)
+       (vec)))
+
+
+;; Basic non-regex goal
+(fact "no class" (logic/run 1 [q] (charactero [] q)) => '())
+(fact "backwards"
+  (logic/lfirst (first (logic/run 1 [q] (charactero q \A))))
+  => \A)
+(fact "A"
+  (logic/run 20 [q] (charactero  [\A] q))
+  => [\A])
+
+(fact "[AB]"
+  (logic/run 20 [q] (charactero [\A \B] q)) => [\A \B])
+
+;; regexes
 
 (fact "A+"
   (->> (logic/run 10 [q] (regex-matcho (c-plus [\A]) q))
        (find-regex-matches #"A+")) => (has-prefix ["A" "AA" "AAA"]))
+
+
+(fact "BA+"
+  (->> (logic/run 10 [q] (regex-matcho (c-plus [\B \A]) q))
+       (find-regex-matches #"[BA]+")) => (has not-any? nil?))
+
+;; don't care too much about this one i think
+(fact "Backwards: AB"
+  (first (logic/run 1 [q] (regex-matcho q (logicify-string "AB")))) => (contains {:operator :quantification}))

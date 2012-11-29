@@ -51,7 +51,10 @@
 (defn character-classo [regex-params match]
   (fresh [character-domain, root]
          (== regex-params (partial-map {:domain character-domain}))
-         (charactero character-domain match)))
+         (fresh [h r]
+                (conso h r match)
+                (emptyo r)
+                (charactero character-domain h))))
 
 (declare regex-matcho
 )
@@ -71,7 +74,9 @@
                         (== regex-params
                             (partial-map
                              {:minimum minimum :children children}))
+                        (== minimum 1)
                         (firsto children child)
+                        (resto children [])
                         (pluso child match)))
 
 
