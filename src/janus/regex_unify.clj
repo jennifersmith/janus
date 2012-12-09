@@ -114,6 +114,20 @@
          (sequenco-foo children match)
          (log-state "sequenco2" match)))
 
+(defn optiono2 [children match]
+  (conde
+   ((emptyo children) fail)
+   ((fresh [child remaining-children]
+           (conso child remaining-children children)
+           (conde
+            ((regex-matcho child match))
+            ((optiono2 remaining-children match)))))))
+
+(defn optiono [regex-params match]
+  (fresh [children]
+         (== regex-params {:children children})
+         (log-state "hai" children)
+         (optiono2 children match)))
 
 
 (defn regex-matcho [regex match]
@@ -127,4 +141,5 @@
          (matche [operator]
                  [[:quantification] (quantificationo params match)]
                  [[:character-class] (character-classo params match)]
-                 [[:sequence] (sequenco params match) (log-state "end" match) ])))
+                 [[:sequence] (sequenco params match) (log-state "end" match) ]
+                 [[:option] (optiono params match)] )))

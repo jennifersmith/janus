@@ -44,6 +44,10 @@
   (-> (basic-regex :sequence nil)
       (with-children children)) )
 
+(defn options [& children]
+  (-> (basic-regex :option nil)
+      (with-children children)))
+
 
 (defn run-logic [logic-fn regex]
 (let [results (logic/run 20 [q] (logic-fn q))]
@@ -96,6 +100,34 @@
                            (character-class [\A \B]))
                           q))
        (find-regex-matches #"[12][AB]")) => (has-prefix ["1A" "2A" "1B" "2B"]))
+
+;; Sequence of character classes and quantifications
+
+(fact "[1234]+A[XYZ]"
+  (->> (logic/run 10 [q] (regex-matcho
+                          (regex-sequence
+                           (c-plus [\1 \2 \3 \4])
+                           (character-class [\A])
+                           (character-class [\X \Y \Z]))
+                          q))
+       (find-regex-matches #"[1234]+A[XYZ]")) =>
+       (has-prefix ["1AX" "1AY" "1AZ" "2AX" "2AY"]))
+
+;;options
+
+
+(fact "a|b|c"
+  (->> (logic/run 10 [q] (regex-matcho
+                          (options
+                           (character-class [\A])
+                           (character-class [\B])
+                           (character-class [\C]))
+                          q))
+       (find-regex-matches #"A|B|C")) =>
+       [ "A" "B" "C"])
+
+;; use it backwards
+
 
 ;; don't care too much about this one i think
 (fact "Backwards: AB"
