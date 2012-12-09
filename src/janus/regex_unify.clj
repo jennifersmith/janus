@@ -2,6 +2,22 @@
     (:refer-clojure :exclude [==])
     (:use clojure.core.logic)
     (:require [clojure.core.logic :as logic]))
+(def ^:dynamic *debug* false)
+
+(defmacro log-with-more [& s]
+`(fn [a#]
+   (if *debug*
+     (println ~@s {:substitutions a#}))
+     a#))
+
+(defmacro log-state [message & interesting-state]
+  `(fn [subs#]
+     (if *debug*
+       (let [state# (:s subs#)]
+         (println [~message
+                   [~@interesting-state]
+                   (select-keys state# [~@interesting-state] )
+                   state#]))) subs# ))
 
 (defn make-char-set [start end]
   (vec (map char (range (int start) (inc (int end))))))
@@ -50,14 +66,16 @@
 
 (defn character-classo [regex-params match]
   (fresh [character-domain, root]
+         (log-state "character-classo" match)
          (== regex-params (partial-map {:domain character-domain}))
          (fresh [h r]
                 (conso h r match)
                 (emptyo r)
-                (charactero character-domain h))))
+                (charactero character-domain h)
+                         (log-state "character-classo-two" match h r))))
 
-(declare regex-matcho
-)
+(declare regex-matcho)
+
 (defn pluso [inner match]
 (logic/all
  (logic/fresh [h]
@@ -79,9 +97,28 @@
                         (resto children [])
                         (pluso child match)))
 
+(defn sequenco-foo [children match]
+   (conde
+          ((emptyo children) (== match '()))
+          ( (fresh [child remaining-children head remaining-match]
+                   (conso head remaining-match match)
+                   (conso child remaining-children children)
+                   (regex-matcho child head )
+                   (sequenco-foo remaining-children remaining-match)
+                   ))))
+
+(defn sequenco [regex-params match]
+  (fresh [children]
+         (log-state "sequenco" match)
+         (== regex-params {:children children})
+         (sequenco-foo children match)
+         (log-state "sequenco2" match)))
+
+
 
 (defn regex-matcho [regex match]
   (fresh [pm operator params]
+         (log-with-more "regex-matcho"  )
          (== pm
              (partial-map
               {:operator operator
@@ -89,4 +126,5 @@
          (== regex pm)
          (matche [operator]
                  [[:quantification] (quantificationo params match)]
-                 [[:character-class] (character-classo params match)])))
+                 [[:character-class] (character-classo params match)]
+                 [[:sequence] (sequenco params match) (log-state "end" match) ])))

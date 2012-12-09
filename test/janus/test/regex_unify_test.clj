@@ -27,13 +27,22 @@
 
 (defn basic-regex [operator params] {:operator operator :params params})
 
-(defn with-children [regex & children]
+
+
+
+
+
+(defn with-children [regex children]
   (update-in regex [ :params :children] (fnil #(concat children %) [])))
 
 (defn character-class [c] (basic-regex :character-class {:domain c}))
 
 (defn c-plus [c] (-> (basic-regex :quantification {:minimum 1})
-                     (with-children (character-class c))))
+                     (with-children [ (character-class c)])))
+
+(defn regex-sequence [& children]
+  (-> (basic-regex :sequence nil)
+      (with-children children)) )
 
 
 (defn run-logic [logic-fn regex]
@@ -75,9 +84,18 @@
        (find-regex-matches #"A+")) => (has-prefix ["A" "AA" "AAA"]))
 
 
-(fact "BA+"
+(fact "[BA]+"
   (->> (logic/run 10 [q] (regex-matcho (c-plus [\B \A]) q))
        (find-regex-matches #"[BA]+")) => (has not-any? nil?))
+
+;; sequence of character classes
+(fact "[12][AB]"
+  (->> (logic/run 10 [q] (regex-matcho
+                          (regex-sequence
+                           (character-class [\1 \2])
+                           (character-class [\A \B]))
+                          q))
+       (find-regex-matches #"[12][AB]")) => (has-prefix ["1A" "2A" "1B" "2B"]))
 
 ;; don't care too much about this one i think
 (fact "Backwards: AB"
