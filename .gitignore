@@ -8,3 +8,4 @@ pom.xml
 /tmp/aruba/good-contract.jns
 /sinatra.log
 *.tar.gz
+target/
