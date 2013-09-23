@@ -3,8 +3,7 @@
    [json-path]
    [clojure.data.json :as json]
    [clojure.data.xml :as xml]
-   [clj-http.client :as http]]
-  [:use midje.sweet])
+   [clj-http.client :as http]])
 
 (defn extract-clause [clause contract context]
   (filter #(= clause (nth % 0))
