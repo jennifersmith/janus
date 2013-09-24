@@ -30,10 +30,27 @@
   (facts "Can verify a single contract for a running service"
     (janus/unsafe-verify
      '(service "simple JSON service"
-               (contract "GET document"
-                         (method :get)
-                         (url "http://localhost:8080/")
-                         (header "Content-Type" "application/json")
-                         (should-have :path "$.id" :of-type :number)
-                         (should-have :path "$.features[*]" :matching #"[a-z]")))
-     ) => true))
+               (contract
+                "GET document"
+                (method :get)
+                (url "http://localhost:8080/")
+                (header "Content-Type" "application/json")
+                (should-have :path "$.id" :of-type :number)
+                (should-have :path "$.features[*]" :matching #"[a-z]"))))
+    => ["simple JSON service" :succeeded]))
+
+(against-background [(before :facts
+                             (serve-response {:id 1 :features [10 "b"]}))]
+  (fact "Can verify a single contract for a running service"
+    (janus/unsafe-verify
+     '(service "simple JSON service"
+               (contract
+                "GET document"
+                (method :get)
+                (url "http://localhost:8080/")
+                (header "Content-Type" "application/json")
+                (should-have :path "$.features[*]" :matching #"[a-z]"))))
+    => ["simple JSON service" 
+        :failed 
+        [["GET document" 
+          :failed ["Expected \"10\" to match regex [a-z], at path $.features[*]"]]]]))
