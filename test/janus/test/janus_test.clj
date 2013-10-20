@@ -26,7 +26,7 @@
 
 
 (against-background [(before :facts
-                             (serve-response {:id "1" :features ["a" "b"]}))]
+                             (serve-response {:id 1 :features ["a" "b"]}))]
   (facts "Can verify a single contract for a running service"
     (janus/unsafe-verify
      '(service "simple JSON service"

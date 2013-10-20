@@ -15,6 +15,7 @@
                  [midje "1.6-beta1"]]
   :profiles {:dev {:dependencies [ [clj-http-fake "0.2.3"]
                                    [ring/ring-devel "1.1.0"]
-                                   [ring/ring-json "0.2.0"]]
+                                   [ring/ring-json "0.2.0"]
+                                   [midje "1.6-beta1"]]
 }}
   :main janus)
