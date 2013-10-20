@@ -2,8 +2,9 @@
   (:import [java.io Closeable])
   (:require [janus]
             [janus.dsl :refer [service contract method url header should-have]]
+            [liberator.core :refer [resource]]
             [midje.sweet :refer :all]
-
+            [compojure.core :refer [routes ANY]]
             [ring.util.serve :refer [serve* stop-server]]
             [ring.util.response :refer [response]]
             [ring.middleware.json :refer [wrap-json-response]]))
@@ -59,12 +60,12 @@
 (against-background
   [(before :facts
            (serve-response-new
-            (routes (POST "/" []
-              {:origin "ORD"
-               :destination "ATL"
-               :paxCount 1
-               :date "2012-03-21"}))
-            ))]
+            (routes
+             (ANY "/" []
+                  (resource
+                   :available-media-types ["application/json" "text/json"]
+                   :allowed-methods [:post]
+                   :handle-created (fn [ctx] {:status :awesome}))))))]
   (fact "Should fail verification if we attempt a get on a post-only resource"
     (janus/unsafe-verify
      '(service
@@ -72,12 +73,13 @@
        (contract
         "GET valid search"
         (method :get)
-        (url "http://localhost:4568/")
-        (header "Content-Type" "application/json"))))
+        (url "http://localhost:8080/")
+        (header "Content-Type" "application/json") 
+        (should-have :status 200))))
     => ["Shopping: One-way"
         :failed
-        [["GET document"
-          :failed ["Expected 200 status, got 501"]]]])
+        [["GET valid search"
+          :failed ["Expected status 200. Got status 405"]]]])
 
   (future-fact "Should verify that a post is possible"
     (janus/unsafe-verify

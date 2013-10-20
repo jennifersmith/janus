@@ -2,7 +2,7 @@
   :description "Consumer-driven contracts, verified both ways."
   :url "http://github.com/gga/janus"
   :dependencies [[org.clojure/clojure "1.5.0"]
-                 [org.clojure/data.json "0.1.1"]
+                 [org.clojure/data.json "0.2.3"]
                  [json-path "0.2.0"]
                  [clj-http "0.3.2"]
                  [org.clojure/core.logic "0.6.6"]
@@ -16,6 +16,7 @@
   :profiles {:dev {:dependencies [ [clj-http-fake "0.2.3"]
                                    [ring/ring-devel "1.1.0"]
                                    [ring/ring-json "0.2.0"]
-                                   [compojure "1.1.5"]]
+                                   [compojure "1.1.5"]
+                                   [liberator "0.9.0"]]
 }}
   :main janus)

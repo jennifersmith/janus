@@ -79,10 +79,13 @@
   (let [response (http/request {:method (property "method" contract context),
                                 :url (property "url" contract context)
                                 :headers (headers-from contract context)
-                                :body (body-from contract context)})
+                                :body (body-from contract context)
+                                :throw-exceptions false
+                                 :debug true})
         envelope-errors (errors-in-envelope response contract context)
         body-errors (errors-in-body response contract context)
-        errors (concat envelope-errors body-errors)]
+        errors (concat envelope-errors  [] ;;body-errors
+                       )]
     (if (empty? errors)
       [(:name contract) :succeeded]
       [(:name contract) :failed errors])))
