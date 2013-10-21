@@ -13,7 +13,6 @@
 
 (defn create-handler [response-payload]
   (fn [request]
-    (println request "HERE")
     response-payload))
 
 (defn serve-response [response-payload]
@@ -74,7 +73,7 @@
         "GET valid search"
         (method :get)
         (url "http://localhost:8080/")
-        (header "Content-Type" "application/json") 
+        (header "Content-Type" "application/json")
         (should-have :status 200))))
     => ["Shopping: One-way"
         :failed

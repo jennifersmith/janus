@@ -95,7 +95,7 @@
     ..contract.. =contains=> {:body {:type :xml :data [:tag {:attr "value"}]}}))
 
 (against-background
-  [(http/request {:method :get, :url "url" :headers "headers" :body "body"}) => "http response"
+  [(http/request {:method :get, :url "url" :headers "headers" :body "body" :throw-exceptions false}) => "http response"
    ..contract.. =contains=> {:name "sample contract"}
    (property "method" ..contract.. ..context..) => :get
    (property "url" ..contract.. ..context..) => "url"
@@ -117,7 +117,8 @@
     (verify-contract ..contract.. ..context..) => ["sample contract" :failed
                                                    ["Expected body to match."]]
     (provided
-      (errors-in-body "http response" ..contract.. ..context..) => ["Expected body to match."])))
+      (errors-in-body "http response" ..contract.. ..context..) =>
+      ["Expected body to match."])))
 
 (facts
   (verify-service {:name "svc" :contracts ["contract"]} ..context..) => ["svc" :succeeded]
