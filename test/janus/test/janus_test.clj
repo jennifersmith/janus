@@ -2,35 +2,36 @@
   (:import [java.io Closeable])
   (:require [janus]
             [janus.dsl :refer [service contract method url header should-have]]
-            [liberator.core :refer :all]
+            [liberator.core :refer [resource]]
             [midje.sweet :refer :all]
             [compojure.core :refer [routes ANY]]
             [ring.util.serve :refer [serve* stop-server]]
-            [ring.util.response :refer [response]]
-            [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
-            [clojure.data.json :refer [write-str]]))
+            [ring.middleware.json :refer [wrap-json-response wrap-json-body]]))
 
 
+(defn serve-resource [resource]
+  (let [routes (routes (ANY "/" [] resource))]
+    (-> routes
+        (wrap-json-response)
+        (serve* 8080 true))))
 
-(defn create-handler [response-payload]
-  (fn [request]
-    response-payload))
+(defn simple-get-resource [payload]
+  (resource
+   :allowed-methods [:get]
+   :available-media-types ["application/json" "text/json"]
+   :handle-ok (fn [ctx] payload)))
 
-(defn serve-response [response-payload]
-  (serve*
-   (-> response-payload
-       (create-handler)
-       (wrap-json-response)
-       (wrap-json-body))
-   8080 true))
+(defn post-only-resource [payload]
+  (resource
+   :available-media-types ["application/json" "text/json"]
+   :allowed-methods [:post]
+   :handle-created (fn [ctx] payload )))
 
-(defn serve-response-new [routes]
-  (serve* (wrap-json-response routes)
-          8080 true))
-
-
-(against-background [(before :facts
-                             (serve-response (response {:id 1 :features ["a" "b"]})))]
+(against-background
+ [(before :facts
+          (serve-resource
+           (simple-get-resource
+            {:id 1 :features ["a" "b"]})))]
   (fact "Can verify a single contract for a running service"
     (janus/unsafe-verify
      '(service "simple JSON service"
@@ -45,7 +46,7 @@
 
 (against-background
   [(before :facts
-           (serve-response (response {:id 1 :features [10 "b"]})))]
+           (serve-resource (simple-get-resource {:id 1 :features [10 "b"]})))]
   (fact "Can verify a single contract for a running service"
     (janus/unsafe-verify
      '(service "simple JSON service"
@@ -62,13 +63,9 @@
 
 (against-background
   [(before :facts
-           (serve-response-new
-            (routes
-             (ANY "/" []
-                  (resource
-                   :available-media-types ["application/json" "text/json"]
-                   :allowed-methods [:post]
-                   :handle-created (fn [ctx] {:status :awesome}))))))]
+           (serve-resource
+            (post-only-resource
+             {:status :awesome})))]
   (fact "Should fail verification if we attempt a get on a post-only resource"
     (janus/unsafe-verify
      '(service
@@ -83,19 +80,14 @@
         :failed
         [["GET valid search"
           :failed ["Expected status 200. Got status 405"]]]])
-  
-  (against-background 
+
+(against-background
    [(before :facts
-            (serve-response-new
-             (routes
-              (ANY "/" []
-                   (resource
-                    :available-media-types ["application/json" "text/json"]
-                    :allowed-methods [:post]
-                    :handle-created (fn [ctx] {:origin "ORD"
-                                               :destination "ATL"
-                                               :departDate "2014-01-01"
-                                               :itineraries 44} ))))))]
+            (serve-resource
+             (post-only-resource {:origin "ORD"
+                                         :destination "ATL"
+                                         :departDate "2014-01-01"
+                                         :itineraries 44})))]
 
    (fact "Should verify that a post is possible"
          (janus/unsafe-verify
