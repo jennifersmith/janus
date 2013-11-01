@@ -1,8 +1,12 @@
 (ns janus.dsl)
 
 (defmulti should-have (fn [& args] (nth args 0)))
-(defmethod should-have :path [& args]
-  [:clause [:path (nth args 1) (nth args 2) (nth args 3)]])
+(defmethod should-have :path 
+  ([_ path match expected]
+     [:clause [:path path match expected]])
+  ([_ path match expected & children]
+     [:clause [:path path match expected (vec children)]]))
+
 (defmethod should-have :status [& args]
   [:clause [:status (nth args 1)]])
 (defmethod should-have :header [& args]

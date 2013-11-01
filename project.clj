@@ -13,10 +13,13 @@
                  [org.mortbay.jetty/jetty "6.1.14"]
                  [ring-serve "0.1.2"]
                  [midje "1.6-beta1"]]
-  :profiles {:dev {:dependencies [ [clj-http-fake "0.2.3"]
+  :profiles {:dev {
+                   :source-paths ["examples/"]
+                   :dependencies [ [clj-http-fake "0.2.3"]
                                    [ring/ring-devel "1.1.0"]
                                    [ring/ring-json "0.2.0"]
                                    [compojure "1.1.5"]
-                                   [liberator "0.9.0"]]
+                                   [liberator "0.9.0"]
+                                   [org.clojure/tools.namespace "0.2.4"]]
 }}
   :main janus)

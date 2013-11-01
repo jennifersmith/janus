@@ -7,7 +7,11 @@
 (midje/fact "should-have creates clauses as required"
             (should-have :path "path" :of-type :type) => [:clause [:path "path" :of-type :type]]
             (should-have :status 200) => [:clause [:status 200]]
-            (should-have :header "Content-Type" :equal-to "application/json") => [:clause [:header "Content-Type" :equal-to "application/json"]])
+            (should-have :header "Content-Type" :equal-to "application/json") => [:clause [:header "Content-Type" :equal-to "application/json"]]
+            (should-have :path "foo" :of-type :object 
+                         (should-have :path "bar" :matching ...amazing-regex...)) => 
+                         [:clause [:path "foo" :of-type :object 
+                                   [[:clause [:path "bar" :matching ...amazing-regex...]]]]])
 
 (midje/fact "should-have raises an error on a malformed clause")
 
