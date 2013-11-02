@@ -5,50 +5,59 @@
 (defn extract-rule [clause]
   (nth clause 2))
 
-(defn equal-to [expected actual]
-  (if (not= actual expected)
-    [(str "Expected \"" expected "\". Got \"" actual "\"")]
-    []))
-
 (def type->pred { :string string?
                  :array sequential?
                  :object map?
                  :number number?})
 
-(defn of-type [expected actual]
+(defmulti check (fn [rule & _]  rule))
+
+(defmethod check :equal-to [_ expected actual]
+  (if (not= actual expected)
+    [(str "Expected \"" expected "\". Got \"" actual "\"")]
+    []))
+
+(defn check-children-dispatch [rule expected & _] [rule expected])
+(defmulti check-children #'check-children-dispatch)
+
+
+
+(defmethod check-children :default [rule expected children-clauses value]
+  (if (empty? children-clauses)
+    []
+    [(str "Contract error: " rule " " expected " cannot specify child clauses: " children-clauses)]))
+
+(defmethod check :of-type [_ expected actual]
   (let [pred (type->pred expected)]
     (cond 
      (nil? pred) [(str "unrecognised type " expected)]
      (not (pred actual)) [(str "Expected \"" actual "\" to be "  (name expected))]
      :else [])))
 
-(defn matching [expected actual]
+(defmethod check :matching [_ expected actual]
   (if (not (re-find expected (str actual)))
     [(str "Expected \"" actual "\" to match regex " expected)]
     []))
 
-(defn check [rule expected actual]
-  (cond
-   (= :equal-to rule) (equal-to expected actual)
-   (= :of-type rule) (of-type expected actual)
-   (= :matching rule) (matching expected actual)
-   :else [(str "Unknown matcher " rule)]))
-
-
 (defn contextualize-failure [path failure]
   (str failure ", at path " path))
 
-;; todo, simplify by returning empty seq for success
+;; TODO: Avoid tuples, use maps
 
-(defn verify-clause [json-doc [_ path rule expected & children]]
+(defn verify-clause [json-doc [_ path rule expected children]]
   (let [doc-part  (json-path/at-path path json-doc)
         target (if (sequential? doc-part) doc-part [doc-part])
         verify (fn [value]
-                 (let [failure (check rule expected value)]
-                   (map #(contextualize-failure path %) failure)))]
+                 (let [failures (flatten [(check rule expected value) 
+                                          (check-children rule expected children value)])]
+                   (map #(contextualize-failure path %) failures)))]
     (if (empty? target)
       [(str "Nothing found at path " path)]
       (mapcat #(verify %) target))))
+
+;; to use verify-clause :(
+(defmethod check-children [:of-type :object] [_ _ children-clauses value] 
+  (map #(verify-clause value %) children-clauses))
 
 (defn verify-document [doc clauses]
   (let [json-doc (read-json doc)]
