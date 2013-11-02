@@ -93,14 +93,29 @@
    :body (body-from request context)
    :throw-exceptions false})
 
-(defn validate-response [response actual-response context]
-  (mapcat #(check-clause actual-response %) response))
+(def validate-response nil)
+
+(defmulti validate-response (fn [_ response _] (:result response)))
+
+(defmethod validate-response :ok [expected-response {:keys  [response]} context]
+  (mapcat #(check-clause response %) expected-response))
+
+(defmethod validate-response :socket-error [_ {:keys [error] } context]
+  [error])
+
+;; todo: lose stack trace ... bad?
+(defn safe-request [request] 
+  (try
+    {:result :ok
+     :response (http/request request)}
+    (catch java.io.IOException e
+      {:result :socket-error :error {:class (class e) :message (.getMessage e)}} )))
 
 ;; todo :endpoint a very separate part of contract  when have 'transitive' contracts
 (defn verify-contract [{:keys [request response name endpoint]} context]
   (let [
         request (build-request request endpoint context)
-        actual-response (http/request request)
+        actual-response (safe-request request)
         errors (validate-response response actual-response context)]
     
     (if (empty? errors)

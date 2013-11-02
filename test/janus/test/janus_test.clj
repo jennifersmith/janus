@@ -125,3 +125,20 @@
           (janus/unsafe-verify)
           (get-in [:results "POST valid search" :result]))
          => :succeeded)))
+
+(fact "Should error well if the service is not running"
+  (->
+   '(service "simple JSON service"
+             (contract
+              :contract-foo
+              "http://localhost:11591/"
+              (request
+               (method :get)
+               (header "Content-Type" "application/json"))
+              (response
+               (body
+                (of-type :json)))))
+   (janus/unsafe-verify)
+   (get-in [:results :contract-foo]))
+  => (contains [[:result :failed] 
+                [:errors [{:class org.apache.http.conn.HttpHostConnectException, :message "Connection to http://localhost:11591 refused"}]]]))

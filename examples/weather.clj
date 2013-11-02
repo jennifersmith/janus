@@ -8,6 +8,13 @@
         [liberator.dev :refer :all]
         [ring.middleware.content-type :refer [wrap-content-type]]))
 
+(defresource invalid-cities
+  :available-media-types ["application/json"]
+  :handle-ok {:cities
+              [{:name "Melbourne"}
+               {:name "London" }
+               {:name "Chicago"}]})
+
 (defresource cities
   :available-media-types ["application/json"]
   :handle-ok {:cities
@@ -16,6 +23,12 @@
                {:name "Chicago" :temp "12 ºC"}]
               })
 
+(defn start-bobs-dodgy-service []
+  (let [routes (routes (ANY "/cities" [] invalid-cities))]
+    (-> routes
+        (wrap-content-type)
+        (wrap-trace :header :ui)
+        (serve* 8787 true))))
 
 (defn start-bobs-weather-service []
   (let [routes (routes (ANY "/cities" [] cities))]

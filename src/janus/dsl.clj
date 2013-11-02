@@ -27,12 +27,6 @@
 (defn body [& clauses]
   [:body clauses])
 
-(defn before [setup-func]
-  [:property {:name "before" :value setup-func}])
-
-(defn after [teardown-func]
-  [:property {:name "after" :value teardown-func}])
-
 (defn header [name value]
   [:header {:name name :value value}])
 
