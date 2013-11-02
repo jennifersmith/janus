@@ -28,16 +28,18 @@
 (def bobs-weather-service-contract
   (service "Bob's weather service"
            (contract :city_list
+                     "http://localhost:8787/cities"
                      (request
                       (method :get)
-                      (header "Content-Type" "application/json")
-                      (url "http://localhost:8787/cities"))
+                      (header "content-type" "application/json"))
                      (response
-                      (header "Content-Type" "application/json")
-                      (should-have :path "$.cities"
-                                   :of-type :object
-                                   (should-have :path "$.name" :matching #"\w+")
-                                   (should-have :path "$.temp" :matching #"\d+ ºC"))))))
+                      (header "content-type" "application/json;charset=UTF-8")
+                      (body
+                       (of-type :json)
+                       (should-have :path "$.cities"
+                                    :of-type :object
+                                    (should-have :path "$.name" :matching #"\w+")
+                                    (should-have :path "$.temp" :matching #"\d+ ºC")))))))
 
 
 (defn verify-bobs-weather-serivce []

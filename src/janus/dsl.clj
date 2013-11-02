@@ -27,8 +27,6 @@
 (defn body [& clauses]
   [:body clauses])
 
-
-
 (defn before [setup-func]
   [:property {:name "before" :value setup-func}])
 
@@ -42,18 +40,9 @@
 (def request  vector)
 (def response vector)
 
-(comment "OLD"
-  [:contract {:name name
-              :properties (map #(nth % 1) (filter #(= :property (first %)) definition))
-              :clauses (map #(nth % 1) (filter #(= :clause (first %)) definition))
-              :headers (map #(nth % 1) (filter #(= :header (first %)) definition))
-              :body (first (map #(nth % 1) (filter #(= :body (first %)) definition)))}])
-
 (defn contract 
   ([name endpoint request response] (assoc (contract name request response) :endpoint endpoint)) 
-  
-  ([name request response]
-                     {:name name :request request :response response}))
+  ([name request response] {:name name :request request :response response}))
 
 (defn service [name & contracts]
   {:name name
