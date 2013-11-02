@@ -75,19 +75,30 @@
      (= (:type body-def) :json) (json/json-str (:data body-def))
      (= (:type body-def) :xml) (to-xml (:data body-def)))))
 
-(defn verify-contract [contract context]
-  (let [response (http/request {:method (property "method" contract context),
-                                :url (property "url" contract context)
-                                :headers (headers-from contract context)
-                                :body (body-from contract context)
-                                :throw-exceptions false})
-        envelope-errors (errors-in-envelope response contract context)
-        body-errors (errors-in-body response contract context)
-        errors (take 1 (concat envelope-errors body-errors))]
-    (if (empty? errors)
-      [(:name contract) :succeeded]
-      [(:name contract) :failed errors])))
+(defn build-request [request endpoint context]
+  {:method (property "method" request context),
+   :url endpoint
+   :headers (headers-from request context)
+   :body (body-from request context)
+   :throw-exceptions false})
 
+(defn validate-response [response actual-response context]
+  (let [envelope-errors (errors-in-envelope actual-response response context)
+        body-errors (errors-in-body actual-response response context)]
+    (take 1 (concat envelope-errors body-errors))))
+
+;; todo :endpoint a very separate part of contract  when have 'transitive' contracts
+(defn verify-contract [{:keys [request response name endpoint]} context]
+  (let [
+        request (build-request request endpoint context)
+        actual-response (http/request request)
+        errors (validate-response response actual-response context)
+]
+    (if (empty? errors)
+      [name :succeeded]
+      [name :failed errors])))
+
+;; todo: remove context - should mash stuff up on creation of the contract
 (defn verify-service [service context]
   (let [errors (filter #(= :failed (nth % 1))
                        (map #(verify-contract % context) (:contracts service)))]

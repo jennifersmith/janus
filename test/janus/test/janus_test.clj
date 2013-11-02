@@ -1,7 +1,7 @@
 (ns janus.test.janus-test
   (:import [java.io Closeable])
   (:require [janus]
-            [janus.dsl :refer [service contract method url header should-have]]
+            [janus.dsl :refer [service contract method url header should-have request response]]
             [liberator.core :refer [resource]]
             [midje.sweet :refer :all]
             [compojure.core :refer [routes ANY]]
@@ -37,11 +37,14 @@
      '(service "simple JSON service"
                (contract
                 "GET document"
-                (method :get)
-                (url "http://localhost:8080/")
-                (header "Content-Type" "application/json")
-                (should-have :path "$.id" :of-type :number)
-                (should-have :path "$.features[*]" :matching #"[a-z]"))))
+                "http://localhost:8080/"
+                (request
+                 (method :get)
+                 (header "Content-Type" "application/json"))
+                (response
+                 (should-have :path "$.id" :of-type :number)
+                 (should-have :path "$.features[*]" :matching #"[a-z]")
+                 (header "Content-Type" "application/json")))))
     => ["simple JSON service" :succeeded]))
 
 (against-background
@@ -52,10 +55,12 @@
      '(service "simple JSON service"
                (contract
                 "GET document"
-                (method :get)
-                (url "http://localhost:8080/")
-                (header "Content-Type" "application/json")
-                (should-have :path "$.features[*]" :matching #"[a-z]"))))
+                "http://localhost:8080/"
+                (request
+                 (method :get)
+                 (header "Content-Type" "application/json"))
+                (response
+                 (should-have :path "$.features[*]" :matching #"[a-z]")))))
     => ["simple JSON service"
         :failed
         [["GET document"
@@ -72,10 +77,12 @@
        "valid search"
        (contract
         "GET valid search"
-        (method :get)
-        (url "http://localhost:8080/")
-        (header "Content-Type" "application/json")
-        (should-have :status 200))))
+        "http://localhost:8080/"
+        (request
+         (method :get))
+        (response
+         (header "Content-Type" "application/json")
+         (should-have :status 200)))))
     => ["valid search"
         :failed
         [["GET valid search"
@@ -95,16 +102,18 @@
             "Search"
             (contract
              "POST valid search"
-             (method :post)
-             (url "http://localhost:8080/")
-             (header "Content-Type" "application/json")
-             (body :json
-                   {:something "not validated"})
-             (should-have :path "$.origin"
-                          :matching #"^[A-Z]{3,3}$")
-             (should-have :path "$.destination"
-                          :matching #"^[A-Z]{3,3}$")
-             (should-have :path "$.departDate"
-                          :matching #"^[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}$")
-             (should-have :path "$.itineraries" :of-type :number))))
+             "http://localhost:8080/"
+             (request
+              (header "Content-Type" "application/json")
+              (method :post)
+              (body :json
+                    {:something "not validated"}))
+             (response
+              (should-have :path "$.origin"
+                           :matching #"^[A-Z]{3,3}$")
+              (should-have :path "$.destination"
+                           :matching #"^[A-Z]{3,3}$")
+              (should-have :path "$.departDate"
+                           :matching #"^[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}$")
+              (should-have :path "$.itineraries" :of-type :number)))))
          => ["Search" :succeeded])))

@@ -94,31 +94,21 @@
   (provided
     ..contract.. =contains=> {:body {:type :xml :data [:tag {:attr "value"}]}}))
 
+;;;arrrrrgh
 (against-background
-  [(http/request {:method :get, :url "url" :headers "headers" :body "body" :throw-exceptions false}) => "http response"
-   ..contract.. =contains=> {:name "sample contract"}
-   (property "method" ..contract.. ..context..) => :get
-   (property "url" ..contract.. ..context..) => "url"
-   (headers-from ..contract.. ..context..) => "headers"
-   (body-from ..contract.. ..context..) => "body"
-   (errors-in-envelope "http response" ..contract.. ..context..) => []
-   (errors-in-body "http response" ..contract.. ..context..) => []]
+  [(build-request ..request.. ..endpoint.. ..context..) => ..http-request..
+   ..contract.. =contains=> {:name "sample contract" :endpoint ..endpoint.. :request ..request.. :response ..response..}
+   ..failing-contract.. =contains=> {:name "sample contract" :endpoint ..endpoint.. :request ..request.. :response ..failing-response..}
+   (http/request ..http-request..) => ..http-response..
+   (validate-response ..response.. ..http-response.. ..context..) => []
+   (validate-response ..failing-response.. ..http-response.. ..context..) => ["Expected status to be: 201. Got: 200"]]
   
   (fact "a valid service succeeds"  
     (verify-contract ..contract.. ..context..) => ["sample contract" :succeeded])
 
-  (fact "a service with an invalid envelope provides descriptive messages"
-    (verify-contract ..contract.. ..context..) => ["sample contract" :failed
-                                                   ["Expected status to be: 201. Got: 200"]]
-    (provided
-      (errors-in-envelope "http response" ..contract.. ..context..) => ["Expected status to be: 201. Got: 200"]))
-
-  (fact "a service with an invalid body provides descriptive messages"
-    (verify-contract ..contract.. ..context..) => ["sample contract" :failed
-                                                   ["Expected body to match."]]
-    (provided
-      (errors-in-body "http response" ..contract.. ..context..) =>
-      ["Expected body to match."])))
+  (fact "a service with an invalid response provides descriptive messages"
+    (verify-contract ..failing-contract.. ..context..) => ["sample contract" :failed
+                                                   ["Expected status to be: 201. Got: 200"]]))
 
 (facts
   (verify-service {:name "svc" :contracts ["contract"]} ..context..) => ["svc" :succeeded]

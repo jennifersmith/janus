@@ -36,18 +36,26 @@
 (defn header [name value]
   [:header {:name name :value value}])
 
-(defn contract [name & definition]
+;; these actually dont do a hell of a lot
+(def request  vector)
+(def response vector)
+
+(comment "OLD"
   [:contract {:name name
               :properties (map #(nth % 1) (filter #(= :property (first %)) definition))
               :clauses (map #(nth % 1) (filter #(= :clause (first %)) definition))
               :headers (map #(nth % 1) (filter #(= :header (first %)) definition))
               :body (first (map #(nth % 1) (filter #(= :body (first %)) definition)))}])
 
-(defn service [name & definition]
+(defn contract 
+  ([name endpoint request response] (assoc (contract name request response) :endpoint endpoint)) 
+  
+  ([name request response]
+                     {:name name :request request :response response}))
+
+(defn service [name & contracts]
   {:name name
-   :properties (map #(nth % 1) (filter #(= :property (first %)) definition))
-   :headers (map #(nth % 1) (filter #(= :header (first %)) definition))
-   :contracts (map #(nth % 1) (filter #(= :contract (first %)) definition))})
+   :contracts (vec contracts)})
 
 (defn construct-domain [dsl-form]
   (let [dsl-ns (create-ns 'dsl-defn)

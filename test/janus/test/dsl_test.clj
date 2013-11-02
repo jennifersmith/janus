@@ -37,24 +37,38 @@
 (midje/fact "header creates a header"
             (header "Name" "Value") => [:header {:name "Name" :value "Value"}])
 
+(midje/fact "request creates a request with matchers inside"
+            (request (header "Name" "Value")) => [[:header {:name "Name" :value "Value"}]])
+
+(midje/fact "respons creates a response with matchers inside"
+            (response (header "Name" "Value")) => [[:header {:name "Name" :value "Value"}]])
+
+(midje/fact "body creates a body with matchers inside"
+            (body (should-have :path "$foo" :of-type :string)) =>
+            [:body {:data [:clause [:path "$foo" :of-type :string]], :type :string}])
+
 (defn contract-with [check-key expected-value]
   (midje/chatty-checker [actual-contract]
                   (= expected-value (check-key (nth actual-contract 1)))))
 
-(midje/fact "defining a contract"
-            (contract "sample") => (contract-with :name "sample")
-            (contract "sample" (method :post)) => (contract-with :properties [{:name "method" :value :post}])
-            (contract "sample" (should-have :path "$" :of-type :string)) => (contract-with :clauses [[:path "$" :of-type :string]])
-            (contract "sample" (header "CT" "json")) => (contract-with :headers [{:name "CT" :value "json"}])
-            (contract "sample" (body "data")) => (contract-with :body {:type :string :data "data"}))
 
-(midje/fact "defining a service"
-            (:name (service "sample")) => "sample"
-            (:properties (service "sample" (method :post))) => (midje/contains {:name "method" :value :post})
-            (:headers (service "sample" (header "ct" "json"))) => (midje/contains {:name "ct" :value "json"})
-            (:contracts (service "sample" (contract "contract 1"))) => (midje/contains {:name "contract 1" :properties [] :headers [] :clauses [] :body nil}))
+(midje/fact "defining a contract as a request and response pairing"
+            (contract "sample" (request) (response)) => {:name "sample" :request [] :response []})
+
+(midje/fact "defining a contract with an endpoint"
+            (contract "sample" "/uri" (request) (response)) => {:name "sample" :endpoint "/uri" :request [] :response []})
+
+(midje/fact "defining a service as a cluster of contracts "
+            (service "sample" 
+                     (contract "first contract" "/start" (request) (response))
+                     (contract "second contract" (request) (response))) => 
+                     { :name "sample" 
+                      :contracts [{:endpoint "/start", 
+                                   :name "first contract", 
+                                   :request [], :response []} 
+                                  {:name "second contract", :request [], :response []}]} )
 
 (midje/fact "loading a DSL program"
-            (construct-domain '(service "sample")) => {:name "sample", :properties (), :headers (), :contracts ()})
+            (construct-domain '(service "sample")) => {:name "sample", :contracts []})
 
 
