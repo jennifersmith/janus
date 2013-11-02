@@ -60,7 +60,6 @@
   (provided
     ..contract.. =contains=> {:body {:type :xml :data [:tag {:attr "value"}]}}))
 
-
 (facts
  (verify-service {:name "svc" :contracts [{:name "c1"}]} ..context..) =>  {:service "svc" :results {"c1" ..res..}}
   (provided

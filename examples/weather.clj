@@ -2,6 +2,7 @@
   (:require 
         [janus.dsl :refer :all]
         [janus.verify :as verify]
+        [janus.simulate :refer [simulate]]
         [compojure.core :refer [routes ANY]]
         [ring.util.serve :refer [serve* stop-server]]
         [liberator.core :refer [defresource]]
@@ -57,3 +58,6 @@
 
 (defn verify-bobs-weather-serivce []
   (verify/verify-service bobs-weather-service-contract {}))
+
+(defn simulate-bobs-weather-service []
+  (simulate bobs-weather-service-contract 8787))

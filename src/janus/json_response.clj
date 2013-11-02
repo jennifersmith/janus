@@ -58,8 +58,16 @@
 (defmethod check-children [:of-type :object] [_ _ children-clauses value] 
   (map #(verify-clause value %) children-clauses))
 
+(defn safe-read-json [doc]
+  (try
+    {:result :success :json-doc (read-json doc)}
+    (catch Exception e
+      {:result :failure :message (str "Invalid json document: " doc)})))
+
 (defn verify-document [doc clauses]
-  (let [json-doc (read-json doc)
+  (let [{:keys [result message json-doc]} (safe-read-json doc)
         path-clauses (filter #(= :path (first %)) clauses)]
-    (mapcat #(verify-clause json-doc %)
-         path-clauses)))
+    (if (= :failure result)
+      [message]
+      (mapcat #(verify-clause json-doc %)
+              path-clauses))))

@@ -62,3 +62,7 @@
  (verify-document (json/json-str {:foo [{:a 1} {:a 2}]}) 
                   [[:path "$.foo" :of-type :number
                     [[:path "$.a" :of-type :string]]]]) => (contains (contains "Contract error: :of-type :number cannot specify child clauses")))
+
+
+(fact "bad json gives a good error" 
+      (verify-document "baaad" {}) => ["Invalid json document: baaad"])
