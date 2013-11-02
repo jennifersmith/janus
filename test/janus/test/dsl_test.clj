@@ -22,17 +22,11 @@
 
 ;; overloading 'body' in req and resp... will be dodgy 
 (midje/fact "body creates a body object with a type and data or matching clauses"
-            (body (of-type :json) (equal-to {:sample "obj"}))
-            => [:body [[:of-type :json] [:equal-to {:sample "obj"}]]]
+            (body (content-type :json) (equal-to {:sample "obj"}))
+            => [:body [[:content-type :json] [:equal-to {:sample "obj"}]]]
             (body (should-have :path "foo" :equal-to "foo")) 
             => [:body [[:path "foo" :equal-to "foo"]]])
 
-
-(midje/fact "before creates a property containing the setup function"
-            (before 'setup-func) => [:property {:name "before" :value 'setup-func}])
-
-(midje/fact "after creates a property containing the teardown function"
-            (after 'teardown-func) => [:property {:name "after" :value 'teardown-func}])
 
 (midje/fact "header creates a header"
             (header "Name" "Value") => [:header {:name "Name" :value "Value"}])

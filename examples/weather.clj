@@ -48,7 +48,7 @@
                      (response
                       (header "content-type" "application/json;charset=UTF-8")
                       (body
-                       (of-type :json)
+                       (content-type :json)
                        (should-have :path "$.cities"
                                     :of-type :object
                                     (should-have :path "$.name" :matching #"\w+")

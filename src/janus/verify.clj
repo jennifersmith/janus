@@ -25,7 +25,7 @@
 (defn get-verifier [doc-type]
   (case doc-type
    :json janus.json-response/verify-document
-   :else (constantly [(str "Unable to verify documents of type '" doc-type "'")])))
+   (constantly [(str "Unable to verify documents of type '" doc-type "'")])))
 
 (def check-clause nil)
 (defmulti check-clause (fn [response clause]  (nth clause 0)))
@@ -46,7 +46,7 @@
 
 (defmethod check-clause :body [actual-response [_ body-clauses]]
   (let [ body (:body actual-response)
-        verifier (get-verifier (property-new :of-type body-clauses))]
+        verifier (get-verifier (property-new :content-type body-clauses))]
     (verifier body body-clauses)))
 
 (defn property [prop-name contract context]

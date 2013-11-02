@@ -11,15 +11,15 @@
 
 (fact "reponse with different status or ct fails"
       
-      (validate-response [[:status 201]]  {:status 200}  {}) => ["Expected status 201. Got status 200"]
+      (validate-response [[:status 201]]  {:result :ok :response {:status 200}}  {}) => ["Expected status 201. Got status 200"]
       
-      (validate-response  [[:header {:name "ct" :value "text/html"}]] {:headers {"ct" "app/json"}} {})
+      (validate-response  [[:header {:name "ct" :value "text/html"}]] {:result :ok :response {:headers {"ct" "app/json"}}} {})
       => ["Expected header 'ct' to equal 'text/html'. Got 'app/json'."])
 
 (fact "the body is checked depending on body type spec"
-  (validate-response  [[:body [[:of-type :json] [:foo :bar]]]] {:body "ok"}  {})
+      (validate-response  [[:body [[:content-type :json] [:foo :bar]]]] {:result :ok :response {:body "ok"}}  {})
   => [..json-validation..]
-  (provided (janus.json-response/verify-document "ok" [[:of-type :json] [:foo :bar]])
+  (provided (janus.json-response/verify-document "ok" [[:content-type :json] [:foo :bar]])
             => [..json-validation..]))
 
 (against-background [..contract.. =contains=> {:properties []}
@@ -60,21 +60,6 @@
   (provided
     ..contract.. =contains=> {:body {:type :xml :data [:tag {:attr "value"}]}}))
 
-;;;arrrrrgh
-(against-background
-  [(build-request ..request.. ..endpoint.. ..context..) => ..http-request..
-   ..contract.. =contains=> {:name "sample contract" :endpoint ..endpoint.. :request ..request.. :response ..response..}
-   ..failing-contract.. =contains=> {:name "sample contract" :endpoint ..endpoint.. :request ..request.. :response ..failing-response..}
-   (http/request ..http-request..) => ..http-response..
-   (validate-response ..response.. ..http-response.. ..context..) => []
-   (validate-response ..failing-response.. ..http-response.. ..context..) => ["Expected status to be: 201. Got: 200"]]
-  
-  (fact "a valid service succeeds"  
-    (verify-contract ..contract.. ..context..) => {:result :succeeded})
-
-  (fact "a service with an invalid response provides descriptive messages"
-        (verify-contract ..failing-contract.. ..context..) => {:result :failed
-                                                               :errors ["Expected status to be: 201. Got: 200"]}))
 
 (facts
  (verify-service {:name "svc" :contracts [{:name "c1"}]} ..context..) =>  {:service "svc" :results {"c1" ..res..}}

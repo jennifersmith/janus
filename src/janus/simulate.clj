@@ -2,7 +2,9 @@
   (:require [liberator.core :refer [resource]]
             [ring.util.serve :refer [serve* stop-server]]
             [compojure.core :refer [routes ANY]]
-            [ring.middleware.json :refer [wrap-json-response wrap-json-body]])
+            [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
+            [ring.util.response :refer [response]]
+            [janus.generators :refer [generate-data]])
   (:import [java.io Closeable]))
 
 ;;HACK! Do someting better with this
@@ -18,13 +20,9 @@
 ;; for when I can be bothered to log properly
 (defn log [& message] (println (apply str "[SIMULATOR]:\t" message)))
 
-(defn create-resource-for-contract [& contract]
-  (resource 
-            :available-media-types ["application/json"]
-            :handle-ok {:cities
-                        [{:name "Melbourne" :temp "22 ºC"}
-                         {:name "London" :temp "15 ºC"}
-                         {:name "Chicago" :temp "12 ºC"}]}))
+(defn create-resource-for-contract [{expected-response :response expected-request :request}]
+  (fn [actual-request]
+    (response generate-data)))
 
 
 (defn simulate [{:keys [name contracts]} port]

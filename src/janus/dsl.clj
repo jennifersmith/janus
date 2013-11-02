@@ -7,7 +7,7 @@
   ([_ path match expected & children]
      [:path path match expected (vec children)]))
 
-(defn of-type [type] [:of-type type])
+(defn content-type [type] [:content-type type])
 (defn equal-to [expected] [:equal-to expected])
 
 (defn url [path]

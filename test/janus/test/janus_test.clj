@@ -1,7 +1,7 @@
 (ns janus.test.janus-test
   (:import [java.io Closeable])
   (:require [janus]
-            [janus.dsl :refer [service contract method url header should-have request response of-type]]
+            [janus.dsl :refer [service contract method url header should-have request response content-type]]
             [liberator.core :refer [resource]]
             [midje.sweet :refer :all]
             [compojure.core :refer [routes ANY]]
@@ -43,7 +43,7 @@
                      (header "Content-Type" "application/json"))
                     (response
                      (body
-                      (of-type :json)
+                      (content-type :json)
                       (should-have :path "$.id" :of-type :number)
                       (should-have :path "$.features[*]" :matching #"[a-z]")))))
          (janus/unsafe-verify)
@@ -65,7 +65,7 @@
                  (header "Content-Type" "application/json"))
                 (response
                  (body
-                  (of-type :json)
+                  (content-type :json)
                   (should-have :path "$.features[*]" :matching #"[a-z]")))))
      (janus/unsafe-verify)
      (get-in [:results :c1 :errors]))
@@ -114,7 +114,7 @@
                     {:something "not validated"}))
              (response
               (body
-               (of-type :json)
+               (content-type :json)
                (should-have :path "$.origin"
                             :matching #"^[A-Z]{3,3}$")
                (should-have :path "$.destination"
@@ -137,7 +137,7 @@
                (header "Content-Type" "application/json"))
               (response
                (body
-                (of-type :json)))))
+                (content-type :json)))))
    (janus/unsafe-verify)
    (get-in [:results :contract-foo]))
   => (contains [[:result :failed] 

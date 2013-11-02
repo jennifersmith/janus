@@ -12,7 +12,8 @@
                  [ring/ring-jetty-adapter "1.2.0"]
                  [org.mortbay.jetty/jetty "6.1.14"]
                  [ring-serve "0.1.2"]
-                 [midje "1.6-beta1"]]
+                 [midje "1.6-beta1"]
+                 [org.clojure/data.generators "0.1.2"]]
   :profiles {:dev {
                    :injections [(require 'clojure.pprint)]
                    :source-paths ["examples/"]
