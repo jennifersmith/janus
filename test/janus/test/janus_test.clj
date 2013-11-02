@@ -1,7 +1,7 @@
 (ns janus.test.janus-test
   (:import [java.io Closeable])
   (:require [janus]
-            [janus.dsl :refer [service contract method url header should-have request response]]
+            [janus.dsl :refer [service contract method url header should-have request response of-type]]
             [liberator.core :refer [resource]]
             [midje.sweet :refer :all]
             [compojure.core :refer [routes ANY]]
@@ -42,9 +42,10 @@
                      (method :get)
                      (header "Content-Type" "application/json"))
                     (response
-                     (should-have :path "$.id" :of-type :number)
-                     (should-have :path "$.features[*]" :matching #"[a-z]")
-                     (header "Content-Type" "application/json"))))
+                     (body
+                      (of-type :json)
+                      (should-have :path "$.id" :of-type :number)
+                      (should-have :path "$.features[*]" :matching #"[a-z]")))))
          (janus/unsafe-verify)
          (get-in [:results :contract-foo]))
 
@@ -54,20 +55,21 @@
   [(before :facts
            (serve-resource (simple-get-resource {:id 1 :features [10 "b"]})))]
   (fact "Can verify a single contract for a running service"
-    (janus/unsafe-verify
+    (->
      '(service "simple JSON service"
                (contract
-                "GET document"
+                :c1
                 "http://localhost:8080/"
                 (request
                  (method :get)
                  (header "Content-Type" "application/json"))
                 (response
-                 (should-have :path "$.features[*]" :matching #"[a-z]")))))
-    => ["simple JSON service"
-        :failed
-        [["GET document"
-          :failed ["Expected \"10\" to match regex [a-z], at path $.features[*]"]]]]))
+                 (body
+                  (of-type :json)
+                  (should-have :path "$.features[*]" :matching #"[a-z]")))))
+     (janus/unsafe-verify)
+     (get-in [:results :c1 :errors]))
+    => (contains  "Expected \"10\" to match regex [a-z], at path $.features[*]")))
 
 (against-background
   [(before :facts
@@ -99,7 +101,7 @@
                                          :itineraries 44})))]
 
    (fact "Should verify that a post is possible"
-         (janus/unsafe-verify
+         (->
           '(service
             "Search"
             (contract
@@ -111,11 +113,15 @@
               (body :json
                     {:something "not validated"}))
              (response
-              (should-have :path "$.origin"
-                           :matching #"^[A-Z]{3,3}$")
-              (should-have :path "$.destination"
-                           :matching #"^[A-Z]{3,3}$")
-              (should-have :path "$.departDate"
-                           :matching #"^[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}$")
-              (should-have :path "$.itineraries" :of-type :number)))))
-         => ["Search" :succeeded])))
+              (body
+               (of-type :json)
+               (should-have :path "$.origin"
+                            :matching #"^[A-Z]{3,3}$")
+               (should-have :path "$.destination"
+                            :matching #"^[A-Z]{3,3}$")
+               (should-have :path "$.departDate"
+                            :matching #"^[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}$")
+               (should-have :path "$.itineraries" :of-type :number)))))
+          (janus/unsafe-verify)
+          (get-in [:results "POST valid search" :result]))
+         => :succeeded)))

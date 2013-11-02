@@ -43,7 +43,6 @@
   (str failure ", at path " path))
 
 ;; TODO: Avoid tuples, use maps
-
 (defn verify-clause [json-doc [_ path rule expected children]]
   (let [doc-part  (json-path/at-path path json-doc)
         target (if (sequential? doc-part) doc-part [doc-part])
@@ -60,6 +59,7 @@
   (map #(verify-clause value %) children-clauses))
 
 (defn verify-document [doc clauses]
-  (let [json-doc (read-json doc)]
+  (let [json-doc (read-json doc)
+        path-clauses (filter #(= :path (first %)) clauses)]
     (mapcat #(verify-clause json-doc %)
-         clauses)))
+         path-clauses)))

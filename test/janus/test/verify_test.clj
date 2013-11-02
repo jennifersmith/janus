@@ -5,30 +5,22 @@
 
 (unfinished )
 
-(fact
-  (extract-clause :s ..contract.. ..context..) => [[:s 1] [:s 2]]
-  (provided
-    ..contract.. =contains=> {:clauses [[:s 1]]}
-    ..context.. =contains=> {:clauses [[:s 2]]}))
-
-(fact "a status clause should check against a response correctly"
-  (check-clause {:status 200} [:status 201]) => "Expected status 201. Got status 200")
-
 (fact "a header clause should allow equality and matching checks"
       (check-clause {:headers {"ct" "blah"}} [:header {:name "ct" :value "blah"}]) => empty?
-      (check-clause {:headers {"ct" "foo"}} [:header {:name "ct" :value "bar"}]) => "Expected header 'ct' to equal 'bar'. Got 'foo'.")
+      (check-clause {:headers {"ct" "foo"}} [:header {:name "ct" :value "bar"}]) => ["Expected header 'ct' to equal 'bar'. Got 'foo'."])
 
 (fact "reponse with different status or ct fails"
       
-      (errors-in-envelope {:status 200} [[:status 201]] {}) => ["Expected status 201. Got status 200"]
+      (validate-response [[:status 201]]  {:status 200}  {}) => ["Expected status 201. Got status 200"]
       
-      (errors-in-envelope {:headers {"ct" "app/json"}} [[:header {:name "ct" :value "text/html"}]] {})
+      (validate-response  [[:header {:name "ct" :value "text/html"}]] {:headers {"ct" "app/json"}} {})
       => ["Expected header 'ct' to equal 'text/html'. Got 'app/json'."])
 
 (fact "the body is checked depending on body type spec"
-  (errors-in-body {:body "ok"} [[:body [[:of-type :json] [:foo :bar]]]] {}) => ..json-validation..
+  (validate-response  [[:body [[:of-type :json] [:foo :bar]]]] {:body "ok"}  {})
+  => [..json-validation..]
   (provided (janus.json-response/verify-document "ok" [[:of-type :json] [:foo :bar]])
-            => ..json-validation..))
+            => [..json-validation..]))
 
 (against-background [..contract.. =contains=> {:properties []}
                      ..context.. =contains=> {:properties []}]
