@@ -1,31 +1,33 @@
 (ns janus.dsl)
-
+(def should-have nil)
 (defmulti should-have (fn [& args] (nth args 0)))
 (defmethod should-have :path 
   ([_ path match expected]
-     [:clause [:path path match expected]])
+     [:path path match expected])
   ([_ path match expected & children]
-     [:clause [:path path match expected (vec children)]]))
+     [:path path match expected (vec children)]))
 
-(defmethod should-have :status [& args]
-  [:clause [:status (nth args 1)]])
-(defmethod should-have :header [& args]
-  [:clause [:header (nth args 1) (nth args 2) (nth args 3)]])
+(defn of-type [type] [:of-type type])
+(defn equal-to [expected] [:equal-to expected])
 
 (defn url [path]
   [:property {:name "url" :value path}])
 
-(defn method [kw-method]
-  [:property {:name "method" :value kw-method}])
+(defn method [method]
+  [:method method])
+
+(defn status [status]
+  [:status status])
 
 (defn serialization [s11n]
   [:property {:name "serialization" :value s11n}])
 
-(defn body [& args]
-  [:body
-   (if (keyword? (nth args 0))
-     {:type (nth args 0) :data (nth args 1)}
-     {:type :string :data (nth args 0)})])
+
+;; not a lot going on now...
+(defn body [& clauses]
+  [:body clauses])
+
+
 
 (defn before [setup-func]
   [:property {:name "before" :value setup-func}])

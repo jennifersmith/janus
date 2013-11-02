@@ -56,9 +56,8 @@
       [(str "Nothing found at path " path)]
       (mapcat #(verify %) target))))
 
-;; to use verify-clause :( ... also wtf has 'clause' come from. we need to drop this with a call to last
 (defmethod check-children [:of-type :object] [_ _ children-clauses value] 
-  (map #(verify-clause value (last %)) children-clauses))
+  (map #(verify-clause value %) children-clauses))
 
 (defn verify-document [doc clauses]
   (let [json-doc (read-json doc)]

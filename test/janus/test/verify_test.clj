@@ -15,38 +15,20 @@
   (check-clause {:status 200} [:status 201]) => "Expected status 201. Got status 200")
 
 (fact "a header clause should allow equality and matching checks"
-  (check-clause {:headers {"ct" "blah"}} [:header "ct" :equal-to "blah"]) => empty?
-  (check-clause {:headers {"ct" "foo"}} [:header "ct" :equal-to "bar"]) => "Expected header 'ct' to equal 'bar'. Got 'foo'.")
+      (check-clause {:headers {"ct" "blah"}} [:header {:name "ct" :value "blah"}]) => empty?
+      (check-clause {:headers {"ct" "foo"}} [:header {:name "ct" :value "bar"}]) => "Expected header 'ct' to equal 'bar'. Got 'foo'.")
 
-(against-background [..response.. =contains=> {:status 200}
-                     ..response.. =contains=> {:headers {"ct" "app/json"}}
-                     ..response.. =contains=> {:body "example body"}]
-  (fact "reponse with different status fails"
-    (errors-in-envelope ..response.. ..contract.. ..context..) => ["Expected status 201. Got status 200"]
-    (provided
-      ..contract.. =contains=> {:clauses [[:status 201]]})
-    (errors-in-envelope ..response.. ..contract.. ..context..) => ["Expected header 'ct' to equal 'text/html'. Got 'app/json'."]
-    (provided
-      ..contract.. =contains=> {:clauses [[:header "ct" :equal-to "text/html"]]})))
+(fact "reponse with different status or ct fails"
+      
+      (errors-in-envelope {:status 200} [[:status 201]] {}) => ["Expected status 201. Got status 200"]
+      
+      (errors-in-envelope {:headers {"ct" "app/json"}} [[:header {:name "ct" :value "text/html"}]] {})
+      => ["Expected header 'ct' to equal 'text/html'. Got 'app/json'."])
 
-(fact "the body is checked depending on the content-type of document received"
-  (against-background)
-  
-  (errors-in-body ..response.. ..contract.. ..context..) => empty?
-  (provided
-    ..response.. =contains=> {:headers {"content-type" "application/json"}}
-    (janus.json-response/verify-document anything anything) => [])
-
-  (errors-in-body ..response.. ..contract.. {}) => empty?
-  (provided
-    ..response.. =contains=> {:headers {"content-type" "application/json"}}
-    ..contract.. =contains=> {:clauses ["contract"]}
-    (janus.json-response/verify-document anything ["contract"]) => [])
-
-  (errors-in-body ..response.. ..contract.. ..context..) => empty?
-  (provided
-    ..response.. =contains=> {:headers {"content-type" "application/vnd.example.account+json"}}
-    (janus.json-response/verify-document anything anything) => []))
+(fact "the body is checked depending on body type spec"
+  (errors-in-body {:body "ok"} [[:body [[:of-type :json] [:foo :bar]]]] {}) => ..json-validation..
+  (provided (janus.json-response/verify-document "ok" [[:of-type :json] [:foo :bar]])
+            => ..json-validation..))
 
 (against-background [..contract.. =contains=> {:properties []}
                      ..context.. =contains=> {:properties []}]
@@ -67,14 +49,6 @@
     (provided
       ..context.. =contains=> {:properties [{:name "prop" :value "context val"}]})))
 
-(fact
-  (headers-from ..contract.. {}) => {"h" "v"}
-  (provided
-    ..contract.. =contains=> {:headers [{:name "h" :value "v"}]})
-  (headers-from ..contract.. {}) => {"h" "v", "h2" "v2"}
-  (provided
-    ..contract.. =contains=> {:headers [{:name "h" :value "v"}
-                                        {:name "h2" :value "v2"}]}))
 
 (fact
   (to-xml [:tag]) => (contains "<tag></tag>")
@@ -104,19 +78,13 @@
    (validate-response ..failing-response.. ..http-response.. ..context..) => ["Expected status to be: 201. Got: 200"]]
   
   (fact "a valid service succeeds"  
-    (verify-contract ..contract.. ..context..) => ["sample contract" :succeeded])
+    (verify-contract ..contract.. ..context..) => {:result :succeeded})
 
   (fact "a service with an invalid response provides descriptive messages"
-    (verify-contract ..failing-contract.. ..context..) => ["sample contract" :failed
-                                                   ["Expected status to be: 201. Got: 200"]]))
+        (verify-contract ..failing-contract.. ..context..) => {:result :failed
+                                                               :errors ["Expected status to be: 201. Got: 200"]}))
 
 (facts
-  (verify-service {:name "svc" :contracts ["contract"]} ..context..) => ["svc" :succeeded]
+ (verify-service {:name "svc" :contracts [{:name "c1"}]} ..context..) =>  {:service "svc" :results {"c1" ..res..}}
   (provided
-    (verify-contract "contract" ..context..) => ["sample" :succeeded])
-
-  (verify-service ..service.. ..context..) => ["svc" :failed [["sample" :failed ["message"]]]]
-  (provided
-    ..service.. =contains=> {:name "svc"}
-    ..service.. =contains=> {:contracts [{:name "sample"}]}
-    (verify-contract {:name "sample"} ..context..) => ["sample" :failed ["message"]]))
+   (verify-contract {:name "c1"} ..context..) => ..res..))

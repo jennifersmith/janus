@@ -5,28 +5,28 @@
 (midje/unfinished)
 
 (midje/fact "should-have creates clauses as required"
-            (should-have :path "path" :of-type :type) => [:clause [:path "path" :of-type :type]]
-            (should-have :status 200) => [:clause [:status 200]]
-            (should-have :header "Content-Type" :equal-to "application/json") => [:clause [:header "Content-Type" :equal-to "application/json"]]
+            (should-have :path "path" :of-type :type) => [:path "path" :of-type :type]
             (should-have :path "foo" :of-type :object 
                          (should-have :path "bar" :matching ...amazing-regex...)) => 
-                         [:clause [:path "foo" :of-type :object 
-                                   [[:clause [:path "bar" :matching ...amazing-regex...]]]]])
-
-(midje/fact "should-have raises an error on a malformed clause")
+                         [:path "foo" :of-type :object 
+                          [[:path "bar" :matching ...amazing-regex...]]])
 
 (midje/fact "url creates a property containing the path"
             (url "path") => [:property {:name "url" :value "path"}])
 
 (midje/fact "method creates a property containing the method"
-            (method :meth) => [:property {:name "method" :value :meth}])
+            (method :meth) => [:method :meth])
 
-(midje/fact "body creates a body object with a type and data"
-  (body :json {:sample "obj"}) => [:body {:type :json :data {:sample "obj"}}]
-  (body "data") => [:body {:type :string :data "data"}])
+(midje/fact "status creates a property containing the status"
+            (status 105) => [:status 105])
 
-(midje/fact "body allows definition of xml"
-            (nth (body :xml [:tag {:attr "value"}]) 1) => (midje/just {:type :xml :data midje/anything}))
+;; overloading 'body' in req and resp... will be dodgy 
+(midje/fact "body creates a body object with a type and data or matching clauses"
+            (body (of-type :json) (equal-to {:sample "obj"}))
+            => [:body [[:of-type :json] [:equal-to {:sample "obj"}]]]
+            (body (should-have :path "foo" :equal-to "foo")) 
+            => [:body [[:path "foo" :equal-to "foo"]]])
+
 
 (midje/fact "before creates a property containing the setup function"
             (before 'setup-func) => [:property {:name "before" :value 'setup-func}])
@@ -43,9 +43,6 @@
 (midje/fact "respons creates a response with matchers inside"
             (response (header "Name" "Value")) => [[:header {:name "Name" :value "Value"}]])
 
-(midje/fact "body creates a body with matchers inside"
-            (body (should-have :path "$foo" :of-type :string)) =>
-            [:body {:data [:clause [:path "$foo" :of-type :string]], :type :string}])
 
 (defn contract-with [check-key expected-value]
   (midje/chatty-checker [actual-contract]

@@ -33,19 +33,22 @@
            (simple-get-resource
             {:id 1 :features ["a" "b"]})))]
   (fact "Can verify a single contract for a running service"
-    (janus/unsafe-verify
-     '(service "simple JSON service"
-               (contract
-                "GET document"
-                "http://localhost:8080/"
-                (request
-                 (method :get)
-                 (header "Content-Type" "application/json"))
-                (response
-                 (should-have :path "$.id" :of-type :number)
-                 (should-have :path "$.features[*]" :matching #"[a-z]")
-                 (header "Content-Type" "application/json")))))
-    => ["simple JSON service" :succeeded]))
+        (->
+         '(service "simple JSON service"
+                   (contract
+                    :contract-foo
+                    "http://localhost:8080/"
+                    (request
+                     (method :get)
+                     (header "Content-Type" "application/json"))
+                    (response
+                     (should-have :path "$.id" :of-type :number)
+                     (should-have :path "$.features[*]" :matching #"[a-z]")
+                     (header "Content-Type" "application/json"))))
+         (janus/unsafe-verify)
+         (get-in [:results :contract-foo]))
+
+        => (contains [[:result :succeeded]])))
 
 (against-background
   [(before :facts
@@ -72,21 +75,20 @@
             (post-only-resource
              {:status :awesome})))]
   (fact "Should fail verification if we attempt a get on a post-only resource"
-    (janus/unsafe-verify
-     '(service
-       "valid search"
-       (contract
-        "GET valid search"
-        "http://localhost:8080/"
-        (request
-         (method :get))
-        (response
-         (header "Content-Type" "application/json")
-         (should-have :status 200)))))
-    => ["valid search"
-        :failed
-        [["GET valid search"
-          :failed ["Expected status 200. Got status 405"]]]])
+        (->
+         '(service
+            "flight search"
+            (contract
+             :search
+             "http://localhost:8080/"
+             (request
+              (method :get))
+             (response
+              (header "Content-Type" "application/json")
+              (status 200))))
+         (janus/unsafe-verify)
+         (get-in [:results :search :errors]))
+    => (contains "Expected status 200. Got status 405"))
 
 (against-background
    [(before :facts
