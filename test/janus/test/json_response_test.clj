@@ -25,6 +25,7 @@
 
 (fact
   (check :matching #"[a-z]+" "hello") => empty?
+  (check :matching #"[a-z]+" "hello there") => ["Expected \"hello there\" to match regex [a-z]+"]
   (check :matching #"[a-z]+" "HELLO") => ["Expected \"HELLO\" to match regex [a-z]+"]
   (check :matching #"[a-z]" 10) => ["Expected \"10\" to match regex [a-z]"])
 
@@ -52,7 +53,7 @@
 
 (fact "we can nest expressions for more detailed testing of objects"
  (verify-document (json/json-str {:foo [{:a 1} {:a 2}]}) 
-                  [[:path "$.foo" :of-type :object [[:path "$.a" :of-type :number]]]]) => empty?
+                  [[:path "$.foo" :of-type :object [[:clause [:path "$.a" :of-type :number]]]]]) => empty?
  (verify-document (json/json-str {:foo [{:a 1} {:a 2}]}) 
                   [[:path "$.foo" :of-type :object 
                     [[:clause [:path "$.a" :of-type :string]]]]] ) =not=> empty?) 
@@ -60,4 +61,4 @@
 (fact "nested expressions don't work on things that are not expected to be objects"
  (verify-document (json/json-str {:foo [{:a 1} {:a 2}]}) 
                   [[:path "$.foo" :of-type :number
-                    [[:path "$.a" :of-type :number]]]]) => (contains (contains "Contract error: :of-type :number cannot specify child clauses")))
+                    [[:clause [:path "$.a" :of-type :string]]]]]) => (contains (contains "Contract error: :of-type :number cannot specify child clauses")))

@@ -33,7 +33,8 @@
                      (header "Content-Type" "application/json")
                      (should-have :path "$.cities"
                                   :of-type :object
-                                  (should-have :path "$.name" :matching #"\w+")))))
+                                  (should-have :path "$.name" :matching #"\w+")
+                                  (should-have :path "$.temp" :matching #"\d+ ºC")))))
 
 
 (defn verify-bobs-weather-serivce []

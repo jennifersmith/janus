@@ -35,7 +35,7 @@
      :else [])))
 
 (defmethod check :matching [_ expected actual]
-  (if (not (re-find expected (str actual)))
+  (if (not (re-matches expected (str actual)))
     [(str "Expected \"" actual "\" to match regex " expected)]
     []))
 
@@ -49,15 +49,16 @@
         target (if (sequential? doc-part) doc-part [doc-part])
         verify (fn [value]
                  (let [failures (flatten [(check rule expected value) 
-                                          (check-children rule expected children value)])]
+                                          (check-children rule expected children value)]
+                                         )]
                    (map #(contextualize-failure path %) failures)))]
     (if (empty? target)
       [(str "Nothing found at path " path)]
       (mapcat #(verify %) target))))
 
-;; to use verify-clause :(
+;; to use verify-clause :( ... also wtf has 'clause' come from. we need to drop this with a call to last
 (defmethod check-children [:of-type :object] [_ _ children-clauses value] 
-  (map #(verify-clause value %) children-clauses))
+  (map #(verify-clause value (last %)) children-clauses))
 
 (defn verify-document [doc clauses]
   (let [json-doc (read-json doc)]
