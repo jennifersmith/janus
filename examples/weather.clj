@@ -7,7 +7,14 @@
         [ring.util.serve :refer [serve* stop-server]]
         [liberator.core :refer [defresource]]
         [liberator.dev :refer :all]
-        [ring.middleware.content-type :refer [wrap-content-type]]))
+        [ring.middleware.content-type :refer [wrap-content-type]]
+        [ring.middleware.cors :refer [wrap-cors]]))
+
+(defn wrap-app [routes]
+  (-> routes
+      (wrap-content-type)
+      (wrap-cors :access-control-allow-origin #"http://localhost:3000")
+      (wrap-trace :header :ui)))
 
 (defresource invalid-cities
   :available-media-types ["application/json"]
@@ -27,15 +34,13 @@
 (defn start-bobs-dodgy-service []
   (let [routes (routes (ANY "/cities" [] invalid-cities))]
     (-> routes
-        (wrap-content-type)
-        (wrap-trace :header :ui)
-        (serve* 8787 true))))
+        (wrap-app)
+        (serve* 8585 true))))
 
 (defn start-bobs-weather-service []
   (let [routes (routes (ANY "/cities" [] cities))]
     (-> routes
-        (wrap-content-type)
-        (wrap-trace :header :ui)
+        (wrap-app)
         (serve* 8787 true))))
 
 
