@@ -8,7 +8,18 @@
         [liberator.core :refer [defresource]]
         [liberator.dev :refer :all]
         [ring.middleware.content-type :refer [wrap-content-type]]
-        [ring.middleware.cors :refer [wrap-cors]]))
+        [ring.middleware.cors :refer [wrap-cors]]
+        [clojure.data.generators :as generators]))
+
+;; todo: data generators?
+;; anwyay you get the idea
+(def random (new java.util.Random))
+
+(defn folded-normal-int [mean]
+  (-> (.nextGaussian random)
+      (Math/abs)
+      (* mean)
+      (Math/round)))
 
 (defn wrap-app [routes]
   (-> routes
@@ -23,13 +34,38 @@
                {:name "London" }
                {:name "Chicago"}]})
 
+(def city-data (atom [{:name "Melbourne" :temp 16}
+                      {:name "London" :temp 7}
+                      {:name "Chicago" :temp 3}]))
+
+(defn adjust-temp [current]
+
+  (let [[up-weight down-weight maintain-weight]
+        (case [(<= current -5) (> 0 current -5) (< 35 current 45) (>= current 45)]
+          [true false false false] [100 0 0]
+          [false true false false] [50 10 40]
+          [false false true false] [10 50 40]
+          [false false false true] [0 100 0]
+          [25 25 50]
+          )]
+    (generators/weighted {current maintain-weight (inc current) up-weight (dec current) down-weight })))
+
+ (defn adjust-temps [current]
+     (map #(update-in %1 [:temp] adjust-temp )
+          current))
+
+(defn create-city-updater []
+  (future
+    (loop []
+      (let [sleep-time (folded-normal-int 500)
+            cities (map :cities city-data)]
+        (swap! city-data adjust-temps )
+        (Thread/sleep sleep-time)        
+        (recur)))))
+
 (defresource cities
   :available-media-types ["application/json"]
-  :handle-ok {:cities
-              [{:name "Melbourne" :temp "22 ºC"}
-               {:name "London" :temp "15 ºC"}
-               {:name "Chicago" :temp "12 ºC"}]
-              })
+  :handle-ok {:cities @city-data})
 
 (defn start-bobs-dodgy-service []
   (let [routes (routes (ANY "/cities" [] invalid-cities))]
@@ -52,17 +88,45 @@
                       (method :get)
                       (header "content-type" "application/json"))
                      (response
-                      (header "content-type" "application/json;charset=UTF-8")
+                      (header "content-type" "application/json; charset=utf-8")
                       (body
                        (content-type :json)
                        (should-have :path "$.cities"
                                     :of-type :object
-                                    (should-have :path "$.name" :matching #"\w+")
-                                    (should-have :path "$.temp" :matching #"\d+ ºC")))))))
+                                    (should-have :path "$.name" :of-type :string)
+                                    (should-have :path "$.temp" :of-type :number)))))))
 
+(def bobs-weather-service-contract-with-constraints
+  (service "Bob's weather service"
+           (contract :city_list
+                     "http://localhost:8787/cities"
+                     (request
+                      (method :get)
+                      (header "content-type" "application/json"))
+                     (response
+                      (header "content-type" "application/json; charset=utf-8")
+                      (body
+                       (content-type :json)
+                       (should-have :path "$.cities"
+                                    :of-type :array
+                                    (max-length 10)
+                                    (should-have :path "$.name" :of-type :string)
+                                    (should-have :path "$.temp" :of-type :number (in-range -5 45))))))))
 
 (defn verify-bobs-weather-serivce []
   (verify/verify-service bobs-weather-service-contract {}))
 
 (defn simulate-bobs-weather-service []
-  (simulate bobs-weather-service-contract 8787))
+  (simulate bobs-weather-service-contract :port 8787 :client-origin "http://localhost:3000"))
+
+(def updater (atom nil))
+(defn start-updater [] (swap! updater (constantly (create-city-updater))))
+(defn kill-updater [] (swap! updater #(do (future-cancel %) nil)))
+
+(defn main [& args]
+  (start-updater)
+  (start-bobs-weather-service)
+  (println "Any key to quit")
+  (read-line)
+  (stop-server)
+  (kill-updater))

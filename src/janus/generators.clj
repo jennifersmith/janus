@@ -8,7 +8,7 @@
 
 ;; todo; sort this crap out. if you need an array say you need an array :D
 (defn crappy-temp-object-gen [clauses]
-  (take (generators/uniform 0 10)
+  (take (generators/uniform 0 1000)
         (repeatedly #(apply merge {} (map generate-data clauses)))))
 
 (def type->generator {:string (fn [& args] (generators/string)) 

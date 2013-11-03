@@ -4,6 +4,7 @@
             [compojure.core :refer [routes ANY]]
             [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
             [ring.util.response :refer [response]]
+            [ring.middleware.cors :refer [wrap-cors]]
             [janus.generators :refer [generate-data]])
   (:import [java.io Closeable]))
 
@@ -30,26 +31,36 @@
 ;; for when I can be bothered to log properly
 (defn log [& message] (println (apply str "[SIMULATOR]:\t" message)))
 
-(defmulti build-request first)
-(defmethod build-request :body [expected]
-  (fn [req]
-    (assoc req
+(defmulti build-response first)
+
+(defmethod build-response :body [expected]
+  (fn [response]
+    (assoc response
       :body (generate-data expected))))
 
-(defmethod build-request :header [[_ {:keys [name value]}]]
-  (fn [req]
-    (assoc-in req [:headers name] value)))
+(defmethod build-response :header [[_ {:keys [name value]}]]
+  (fn [response]
+    (assoc-in response [:headers name] value)))
 
-(defn create-resource-for-contract [{expected-response :response expected-request :request}]
-  (fn [actual-request]
-    (apply comp (map build-request expected-response))))
+(defn create-resource-for-contract [{expected-response-clauses :response expected-request :request}]
+  (let [create-response (apply comp (map build-response expected-response-clauses))]
+    (fn [request]
+      ;; todo : validate request
+      (create-response (response nil)))))
 
 
-(defn simulate [{:keys [name contracts]} port]
+(defn add-client-origin-policy [client-origin handler]
+  (if (nil? client-origin)
+    handler
+    (wrap-cors handler :access-control-allow-origin (re-pattern client-origin))))
+
+(defn simulate [{:keys [name contracts]} & configs]
   (log "Starting simulator of service " name)
-  (let [contract-resources (map create-resource-for-contract contracts)
+  (let [
+        {:keys [port client-origin]} (apply hash-map configs)
+        contract-resources (map create-resource-for-contract contracts)
         handler (create-resource-handler (map :endpoint contracts) contract-resources)
-        server (serve* handler port true)]
+        server (serve* (add-client-origin-policy client-origin handler) port true)]
     (reify Closeable
       (close [this]
         (stop-server)
