@@ -4,10 +4,10 @@
 
 (midje/unfinished)
 
-(midje/fact "should-have creates clauses as required"
-            (should-have :path "path" :of-type :type) => [:path "path" :of-type :type]
-            (should-have :path "foo" :of-type :object 
-                         (should-have :path "bar" :matching ...amazing-regex...)) => 
+(midje/fact "matching-jsonpath creates clauses as required"
+            (matching-jsonpath "path" :of-type :type) => [:path "path" :of-type :type]
+            (matching-jsonpath "foo" :of-type :object 
+                         (matching-jsonpath "bar" :matching ...amazing-regex...)) => 
                          [:path "foo" :of-type :object 
                           [[:path "bar" :matching ...amazing-regex...]]])
 
@@ -24,7 +24,7 @@
 (midje/fact "body creates a body object with a type and data or matching clauses"
             (body (content-type :json) (equal-to {:sample "obj"}))
             => [:body [[:content-type :json] [:equal-to {:sample "obj"}]]]
-            (body (should-have :path "foo" :equal-to "foo")) 
+            (body (matching-jsonpath "foo" :equal-to "foo")) 
             => [:body [[:path "foo" :equal-to "foo"]]])
 
 

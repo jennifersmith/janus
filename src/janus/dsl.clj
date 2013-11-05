@@ -1,10 +1,9 @@
 (ns janus.dsl)
-(def should-have nil)
-(defmulti should-have (fn [& args] (nth args 0)))
-(defmethod should-have :path 
-  ([_ path match expected]
+
+(defn matching-jsonpath 
+  ([path match expected]
      [:path path match expected])
-  ([_ path match expected & children]
+  ([path match expected & children]
      [:path path match expected (vec children)]))
 
 (defn content-type [type] [:content-type type])

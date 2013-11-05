@@ -16,10 +16,10 @@
                       (header "foo" "bar")
                       (body
                        (content-type :json)
-                       (should-have :path "$.images"
+                       (matching-jsonpath "$.images"
                                     :of-type :object
-                                    (should-have :path "$.description" :of-type :string)
-                                    (should-have :path "$.url" :of-type :string)))))))
+                                    (matching-jsonpath "$.description" :of-type :string)
+                                    (matching-jsonpath "$.url" :of-type :string)))))))
 
 
 (with-state-changes [(around :facts (with-open [sim (simulate a-service :port 2020 :client-origin "http://localhost:8080")] ?form))]

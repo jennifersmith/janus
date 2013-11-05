@@ -1,7 +1,7 @@
 (ns janus.test.janus-test
   (:import [java.io Closeable])
   (:require [janus]
-            [janus.dsl :refer [service contract method url header should-have request response content-type]]
+            [janus.dsl :refer [service contract method url header matching-jsonpath request response content-type]]
             [liberator.core :refer [resource]]
             [midje.sweet :refer :all]
             [compojure.core :refer [routes ANY]]
@@ -44,8 +44,8 @@
                     (response
                      (body
                       (content-type :json)
-                      (should-have :path "$.id" :of-type :number)
-                      (should-have :path "$.features[*]" :matching #"[a-z]")))))
+                      (matching-jsonpath "$.id" :of-type :number)
+                      (matching-jsonpath "$.features[*]" :matching #"[a-z]")))))
          (janus/unsafe-verify)
          (get-in [:results :contract-foo]))
 
@@ -66,7 +66,7 @@
                 (response
                  (body
                   (content-type :json)
-                  (should-have :path "$.features[*]" :matching #"[a-z]")))))
+                  (matching-jsonpath "$.features[*]" :matching #"[a-z]")))))
      (janus/unsafe-verify)
      (get-in [:results :c1 :errors]))
     => (contains  "Expected \"10\" to match regex [a-z], at path $.features[*]")))
@@ -115,13 +115,13 @@
              (response
               (body
                (content-type :json)
-               (should-have :path "$.origin"
+               (matching-jsonpath "$.origin"
                             :matching #"^[A-Z]{3,3}$")
-               (should-have :path "$.destination"
+               (matching-jsonpath "$.destination"
                             :matching #"^[A-Z]{3,3}$")
-               (should-have :path "$.departDate"
+               (matching-jsonpath "$.departDate"
                             :matching #"^[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}$")
-               (should-have :path "$.itineraries" :of-type :number)))))
+               (matching-jsonpath "$.itineraries" :of-type :number)))))
           (janus/unsafe-verify)
           (get-in [:results "POST valid search" :result]))
          => :succeeded)))
