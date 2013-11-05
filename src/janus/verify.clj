@@ -135,5 +135,5 @@
 ;;                                 :properties [{:name "method" :value :get}
 ;;                                              {:name "url" :value "http://localhost:4568/service"}]
 ;;                                 :headers [{:name "Content-Type" :value "application/json"}]
-;;                                 :clauses [[:path "$..id" :of-type :number]
-;;                                           [:path "$..features[*]" :matching #"[a-z]"]]}]} {}) => empty?)
+;;                                 :clauses [[:json-path "$..id" :of-type :number]
+;;                                           [:json-path "$..features[*]" :matching #"[a-z]"]]}]} {}) => empty?)

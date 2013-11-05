@@ -5,11 +5,11 @@
 (midje/unfinished)
 
 (midje/fact "matching-jsonpath creates clauses as required"
-            (matching-jsonpath "path" :of-type :type) => [:path "path" :of-type :type]
+            (matching-jsonpath "path" :of-type :type) => [:json-path "path" :of-type :type]
             (matching-jsonpath "foo" :of-type :object 
                          (matching-jsonpath "bar" :matching ...amazing-regex...)) => 
-                         [:path "foo" :of-type :object 
-                          [[:path "bar" :matching ...amazing-regex...]]])
+                         [:json-path "foo" :of-type :object 
+                          [[:json-path "bar" :matching ...amazing-regex...]]])
 
 (midje/fact "url creates a property containing the path"
             (url "path") => [:property {:name "url" :value "path"}])
@@ -25,7 +25,7 @@
             (body (content-type :json) (equal-to {:sample "obj"}))
             => [:body [[:content-type :json] [:equal-to {:sample "obj"}]]]
             (body (matching-jsonpath "foo" :equal-to "foo")) 
-            => [:body [[:path "foo" :equal-to "foo"]]])
+            => [:body [[:json-path "foo" :equal-to "foo"]]])
 
 
 (midje/fact "header creates a header"

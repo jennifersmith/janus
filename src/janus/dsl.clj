@@ -2,9 +2,9 @@
 
 (defn matching-jsonpath 
   ([path match expected]
-     [:path path match expected])
+     [:json-path path match expected])
   ([path match expected & children]
-     [:path path match expected (vec children)]))
+     [:json-path path match expected (vec children)]))
 
 (defn content-type [type] [:content-type type])
 (defn equal-to [expected] [:equal-to expected])
@@ -49,4 +49,3 @@
                    (eval dsl-form))]
     (remove-ns 'dsl-defn)
     compiled))
-

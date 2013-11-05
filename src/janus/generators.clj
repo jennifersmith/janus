@@ -26,7 +26,7 @@
          (map (comp last last))
          (map keyword))))
 
-(defmethod generate-data :path [[_ path & matching-args]]
+(defmethod generate-data :json-path [[_ path & matching-args]]
   (assoc-in {} (json-path-to-assoc-path path) (generate-data matching-args)))
 
 (defmethod generate-data :body [[_ clauses]]

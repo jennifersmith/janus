@@ -66,7 +66,7 @@
 
 (defn verify-document [doc clauses]
   (let [{:keys [result message json-doc]} (safe-read-json doc)
-        path-clauses (filter #(= :path (first %)) clauses)]
+        path-clauses (filter #(= :json-path (first %)) clauses)]
     (if (= :failure result)
       [message]
       (mapcat #(verify-clause json-doc %)

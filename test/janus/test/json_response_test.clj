@@ -6,7 +6,7 @@
 (unfinished )
 
 (fact
-  (extract-rule [:path "" :equal-to "b"]) => :equal-to)
+  (extract-rule [:json-path "" :equal-to "b"]) => :equal-to)
 
 (fact
   (check :equal-to :hello :hello) => empty?
@@ -30,38 +30,38 @@
   (check :matching #"[a-z]" 10) => ["Expected \"10\" to match regex [a-z]"])
 
 (fact
- (verify-clause {:foo "a"} [:path "$.foo" :matching #"[a-z]"]) => empty?
- (verify-clause {:foo "1"} [:path "$.foo" :matching #"[a-z]"]) => ["failed, at path $.foo"]
+ (verify-clause {:foo "a"} [:json-path "$.foo" :matching #"[a-z]"]) => empty?
+ (verify-clause {:foo "1"} [:json-path "$.foo" :matching #"[a-z]"]) => ["failed, at path $.foo"]
   (provided
    (check :matching #"[a-z]" anything) => ["failed"]))
 
 (fact
- (verify-clause {:foo ["a"]} [:path "$.foo[*]" :matching #"[a-z]"]) => empty?
- (verify-clause {:foo ["1"]} [:path "$.foo[*]" :matching #"[a-z]"]) => ["failed, at path $.foo[*]"]
+ (verify-clause {:foo ["a"]} [:json-path "$.foo[*]" :matching #"[a-z]"]) => empty?
+ (verify-clause {:foo ["1"]} [:json-path "$.foo[*]" :matching #"[a-z]"]) => ["failed, at path $.foo[*]"]
   (provided
    (check :matching #"[a-z]" anything) => ["failed"])
-  (verify-clause {:foo []} [:path "$.foo[*]" :of-type :string]) => ["Nothing found at path $.foo[*]"])
+  (verify-clause {:foo []} [:json-path "$.foo[*]" :of-type :string]) => ["Nothing found at path $.foo[*]"])
 
 (fact
-  (verify-document "\"body\"" [[:path "$", :equal-to "body"]]) => empty?
-  (verify-document "{\"foo\": [\"a\"]}" [[:path "$.foo[*]", :matching #"[a-z]"]]) => empty?
-  (verify-document "{\"foo\": [\"1\"]}" [[:path "$.foo[*]", :matching #"[a-z]"]]) =not=> empty?)
+  (verify-document "\"body\"" [[:json-path "$", :equal-to "body"]]) => empty?
+  (verify-document "{\"foo\": [\"a\"]}" [[:json-path "$.foo[*]", :matching #"[a-z]"]]) => empty?
+  (verify-document "{\"foo\": [\"1\"]}" [[:json-path "$.foo[*]", :matching #"[a-z]"]]) =not=> empty?)
 
 (fact
- (verify-document (json/json-str {:foo [1,2,3]}) [[:path "$.foo" :of-type :number]] ) => empty?
-  (verify-document (json/json-str {:foo [1,2,3]}) [[:path "$.foo" :of-type :string]] ) =not=> empty?)
+ (verify-document (json/json-str {:foo [1,2,3]}) [[:json-path "$.foo" :of-type :number]] ) => empty?
+  (verify-document (json/json-str {:foo [1,2,3]}) [[:json-path "$.foo" :of-type :string]] ) =not=> empty?)
 
 (fact "we can nest expressions for more detailed testing of objects"
  (verify-document (json/json-str {:foo [{:a 1} {:a 2}]}) 
-                  [[:path "$.foo" :of-type :object [[:path "$.a" :of-type :number]]]]) => empty?
+                  [[:json-path "$.foo" :of-type :object [[:json-path "$.a" :of-type :number]]]]) => empty?
  (verify-document (json/json-str {:foo [{:a 1} {:a 2}]}) 
-                  [[:path "$.foo" :of-type :object 
-                    [[:path "$.a" :of-type :string]]]] ) =not=> empty?) 
+                  [[:json-path "$.foo" :of-type :object 
+                    [[:json-path "$.a" :of-type :string]]]] ) =not=> empty?) 
 
 (fact "nested expressions don't work on things that are not expected to be objects"
  (verify-document (json/json-str {:foo [{:a 1} {:a 2}]}) 
-                  [[:path "$.foo" :of-type :number
-                    [[:path "$.a" :of-type :string]]]]) => (contains (contains "Contract error: :of-type :number cannot specify child clauses")))
+                  [[:json-path "$.foo" :of-type :number
+                    [[:json-path "$.a" :of-type :string]]]]) => (contains (contains "Contract error: :of-type :number cannot specify child clauses")))
 
 
 (fact "bad json gives a good error" 
