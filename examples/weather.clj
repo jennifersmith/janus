@@ -34,9 +34,9 @@
                {:name "London" }
                {:name "Chicago"}]})
 
-(def city-data (atom [{:name "Melbourne" :temp 16}
-                      {:name "London" :temp 7}
-                      {:name "Chicago" :temp 3}]))
+(def city-data (atom [{:name "Melbourne" :temp 16 :outlook {:today "Monsoon" :tomorrow "Heat wave"}}
+                      {:name "London" :temp 7 :outlook {:today "Rain" :tomorrow "More bloody rain"}}
+                      {:name "Chicago" :temp 3 :outlook {:today "High winds" :tomorrow "High winds"}}]))
 
 (defn adjust-temp [current]
 
@@ -65,7 +65,14 @@
 
 (defresource cities
   :available-media-types ["application/json"]
-  :handle-ok {:cities @city-data})
+  :handle-ok {:cities (map #(select-keys % [:name :temp]) @city-data)})
+
+(defresource city [id]
+  :available-media-types ["application/json"]
+  :exists? (fn [ctx]
+             (if-let [city (first (filter #(= id (:name %)) @city-data))]
+               {:city city}))
+  :handle-ok (fn [ctx] (get ctx :city)))
 
 (defn start-bobs-dodgy-service []
   (let [routes (routes (ANY "/cities" [] invalid-cities))]
@@ -74,7 +81,8 @@
         (serve* 8585 true))))
 
 (defn start-bobs-weather-service []
-  (let [routes (routes (ANY "/cities" [] cities))]
+  (let [routes (routes (ANY "/cities" [] cities)
+                       (ANY "/city/:id" [id] (city id)))]
     (-> routes
         (wrap-app)
         (serve* 8787 true))))
@@ -95,23 +103,23 @@
                                     :of-type :object
                                     (should-have :path "$.name" :of-type :string)
                                     (should-have :path "$.temp" :of-type :number)))))))
-
-(def bobs-weather-service-contract-with-constraints
-  (service "Bob's weather service"
-           (contract :city_list
-                     "http://localhost:8787/cities"
-                     (request
-                      (method :get)
-                      (header "content-type" "application/json"))
-                     (response
-                      (header "content-type" "application/json; charset=utf-8")
-                      (body
-                       (content-type :json)
-                       (should-have :path "$.cities"
-                                    :of-type :array
-                                    (max-length 10)
-                                    (should-have :path "$.name" :of-type :string)
-                                    (should-have :path "$.temp" :of-type :number (in-range -5 45))))))))
+(comment
+  (def bobs-weather-service-contract-with-constraints
+    (service "Bob's weather service"
+             (contract :city_list
+                       "http://localhost:8787/cities"
+                       (request
+                        (method :get)
+                        (header "content-type" "application/json"))
+                       (response
+                        (header "content-type" "application/json; charset=utf-8")
+                        (body
+                         (content-type :json)
+                         (should-have :path "$.cities"
+                                      :of-type :array
+                                      (max-length 10)
+                                      (should-have :path "$.name" :of-type :string)
+                                      (should-have :path "$.temp" :of-type :number (in-range -5 45)))))))))
 
 (defn verify-bobs-weather-serivce []
   (verify/verify-service bobs-weather-service-contract {}))
