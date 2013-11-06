@@ -37,8 +37,10 @@
   ([name endpoint request response] (assoc (contract name request response) :endpoint endpoint)) 
   ([name request response] {:name name :request request :response response}))
 
-(defn service [name & contracts]
+(defn entry-point [name url] {:name name :url url})
+(defn service [name entry-point & contracts]
   {:name name
+   :entry-point entry-point
    :contracts (vec contracts)})
 
 (defn construct-domain [dsl-form]

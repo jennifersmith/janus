@@ -124,10 +124,11 @@
 
 ;; todo: remove context - should mash stuff up on creation of the contract
 
-(defn verify-service [{:keys [name contracts]} context]
-  (let [results (map #(verify-contract % context) contracts)]
+(defn verify-service [{:keys [name contracts entry-point]}]
+  (let [initial-contract (first (filter #(= (:name entry-point) %) contracts))
+        results (verify-contract initial-contract)]
     {:service name
-     :results (zipmap (map :name contracts) results)}))
+     :results {(:name initial-contract)  results}}))
 
 ;; (fact
 ;;   (verify-service {:name "simple JSON service"

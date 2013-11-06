@@ -38,28 +38,25 @@
             (response (header "Name" "Value")) => [[:header {:name "Name" :value "Value"}]])
 
 
-(defn contract-with [check-key expected-value]
-  (midje/chatty-checker [actual-contract]
-                  (= expected-value (check-key (nth actual-contract 1)))))
-
-
 (midje/fact "defining a contract as a request and response pairing"
             (contract "sample" (request) (response)) => {:name "sample" :request [] :response []})
 
 (midje/fact "defining a contract with an endpoint"
             (contract "sample" "/uri" (request) (response)) => {:name "sample" :endpoint "/uri" :request [] :response []})
 
-(midje/fact "defining a service as a cluster of contracts "
+(midje/fact "defining a service as a cluster of contracts with one start point"
             (service "sample" 
-                     (contract "first contract" "/start" (request) (response))
+                     (entry-point "star trek: first contract" "http://example.com/foo")
+                     (contract "star trek: first contract" (request) (response))
                      (contract "second contract" (request) (response))) => 
-                     { :name "sample" 
-                      :contracts [{:endpoint "/start", 
-                                   :name "first contract", 
+                     { :name "sample"
+                      :entry-point {:url "http://example.com/foo" 
+                                    :name "star trek: first contract"}
+                      :contracts [{:name "star trek: first contract", 
                                    :request [], :response []} 
                                   {:name "second contract", :request [], :response []}]} )
 
 (midje/fact "loading a DSL program"
-            (construct-domain '(service "sample")) => {:name "sample", :contracts []})
+            (construct-domain '(service "sample" [])) => {:name "sample", :entry-point [] :contracts []})
 
 

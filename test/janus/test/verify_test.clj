@@ -61,6 +61,6 @@
     ..contract.. =contains=> {:body {:type :xml :data [:tag {:attr "value"}]}}))
 
 (facts
- (verify-service {:name "svc" :contracts [{:name "c1"}]} ..context..) =>  {:service "svc" :results {"c1" ..res..}}
+ (verify-service {:name "svc" :entry-point {:name "c1" :url "http://foo/"} :contracts [{:name "c1"}]}) =>  {:service "svc" :results {"c1" ..res..}}
   (provided
-   (verify-contract {:name "c1"} ..context..) => ..res..))
+   (verify-contract {:name "c1"} "http://foo/") => ..res..))
