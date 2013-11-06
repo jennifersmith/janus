@@ -9,37 +9,25 @@
         [liberator.dev :refer :all]
         [ring.middleware.content-type :refer [wrap-content-type]]
         [ring.middleware.cors :refer [wrap-cors]]
-        [clojure.data.generators :as generators]))
+        [ring.util.response :refer [get-header]]
+        [clojure.data.generators :as generators]
+        [clojure.java.browse :refer [browse-url]]
+        [clojure.pprint :refer [pprint]]))
 
+(def browse-bobs-weather-service 
+  (partial browse-url "http://localhost:8787/cities"))
 ;; todo: data generators?
 ;; anwyay you get the idea
 (def random (new java.util.Random))
-
-(defn folded-normal-int [mean]
-  (-> (.nextGaussian random)
-      (Math/abs)
-      (* mean)
-      (Math/round)))
 
 (defn wrap-app [routes]
   (-> routes
       (wrap-content-type)
       (wrap-cors :access-control-allow-origin #"http://localhost:3000")
-      (wrap-trace :header :ui)))
-
-(defresource invalid-cities
-  :available-media-types ["application/json"]
-  :handle-ok {:cities
-              [{:name "Melbourne"}
-               {:name "London" }
-               {:name "Chicago"}]})
-
-(def city-data (atom [{:name "Melbourne" :temp 16 :outlook {:today "Monsoon" :tomorrow "Heat wave"}}
-                      {:name "London" :temp 7 :outlook {:today "Rain" :tomorrow "More bloody rain"}}
-                      {:name "Chicago" :temp 3 :outlook {:today "High winds" :tomorrow "High winds"}}]))
+;;      (wrap-trace :header :ui)
+      ))
 
 (defn adjust-temp [current]
-
   (let [[up-weight down-weight maintain-weight]
         (case [(<= current -5) (> 0 current -5) (< 35 current 45) (>= current 45)]
           [true false false false] [100 0 0]
@@ -54,71 +42,152 @@
      (map #(update-in %1 [:temp] adjust-temp )
           current))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; weather readings
+;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def city-data (atom 
+                [{:name "Melbourne" 
+                  :temp 16 
+                  :outlook {
+                            :today "Monsoon" 
+                            :tomorrow "Heat wave"}}
+                 {:name "London" 
+                  :temp 7 
+                  :outlook {
+                            :today "Rain" 
+                            :tomorrow "More bloody rain"}}
+                 {:name "Chicago" 
+                  :temp 3 
+                  :outlook {
+                            :today "High winds" 
+                            :tomorrow "High winds"}}]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; simulate reading the weather
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(def  city-updater (atom nil))
 (defn create-city-updater []
-  (future
-    (loop []
-      (let [sleep-time (folded-normal-int 500)
-            cities (map :cities city-data)]
-        (swap! city-data adjust-temps )
-        (Thread/sleep sleep-time)        
-        (recur)))))
+  (if @city-updater
+    (future-cancel @city-updater))
+  (swap! city-updater
+         (fn [_]
+           (future
+             (loop []
+               (let [sleep-time 1000]
+                 (swap! city-data adjust-temps )
+                 (Thread/sleep sleep-time)        
+                 (recur)))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Cities resource (liberator)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defresource cities
   :available-media-types ["application/json"]
-  :handle-ok {:cities (map #(select-keys % [:name :temp]) @city-data)})
+  :handle-ok (fn [ctx] {:cities @city-data}))
 
-(defresource city [id]
-  :available-media-types ["application/json"]
-  :exists? (fn [ctx]
-             (if-let [city (first (filter #(= id (:name %)) @city-data))]
-               {:city city}))
-  :handle-ok (fn [ctx] (get ctx :city)))
-
-(defn start-bobs-dodgy-service []
-  (let [routes (routes (ANY "/cities" [] invalid-cities))]
-    (-> routes
-        (wrap-app)
-        (serve* 8585 true))))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; start the weather service on port 8787
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn start-bobs-weather-service []
-  (let [routes (routes (ANY "/cities" [] cities)
-                       (ANY "/city/:id" [id] (city id)))]
+  (let [routes (routes (ANY "/cities" [] cities))]
     (-> routes
         (wrap-app)
-        (serve* 8787 true))))
+        (serve* 8787 true))
+    (browse-bobs-weather-service)
+    (create-city-updater)))
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Define our consumer contract for Bob's weather service
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (def bobs-weather-service-contract
-  (service "Bob's weather service"
-           (contract :city_list
-                     "http://localhost:8787/cities"
-                     (request
-                      (method :get)
-                      (header "content-type" "application/json"))
-                     (response
-                      (header "content-type" "application/json;charset=UTF-8")
-                      (body
-                       (content-type :json)
-                       (matching-jsonpath "$.cities"
-                                    :of-type :object
-                                    (matching-jsonpath "$.name" :of-type :string)
-                                    (matching-jsonpath "$.temp" :of-type :number)))))))
+  '(service 
+   "Bob's weather service"
+   (contract :city_list
+             "http://localhost:8787/cities"
+             (request
+              (method :get)
+              (header "content-type" "application/json"))
+             (response
+              (header "content-type" "application/json;charset=UTF-8")
+              (body
+               (content-type :json)
+               (matching-jsonpath "$.cities"
+                                  :of-type :object
+                                  (matching-jsonpath "$.name" :of-type :string)
+                                  (matching-jsonpath "$.temp" :of-type :number)))))))
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Let's check the service against the contract
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn verify-bobs-weather-serivce []
-  (verify/verify-service bobs-weather-service-contract {}))
+  (pprint
+   (verify/verify-service (eval bobs-weather-service-contract) {})))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Clojurescript weather dashboard
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def browse-jens-weather-dashboard
+  (partial browse-url "http://localhost:3000/"))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; If the service stops meeting the contract...
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn remove-names []
+  (swap! city-data (partial map #(dissoc % :name))))
+
+;;;;;;;;;;;;;;
+;;; restore data
+;;;;;;;;;;;;;;;
+
+(defn restore-names []
+  (swap! city-data (partial map #(assoc %2 :name %1) ["Melbourne" "London" "Chicago"] )))
+
+;;;;;;;;;;;;;;;;;;;;
+;; If the service gets some additive changes
+;;;;;;;;;;;;;;;;;;;;
+(defn add-outlook []
+  (swap! city-data (partial map #(assoc %2 :outlook %1)
+                            [{
+                              :today "Monsoon" 
+                              :tomorrow "Heat wave"}
+                             {
+                              :today "Rain" 
+                              :tomorrow "More bloody rain"}
+                             {
+                              :today "High winds" 
+                              :tomorrow "High winds"}])))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Calling out to the live API might be impractical - maybe costs $$ or is unreliable.
+;; As we know what the service needs we can simulate it
+;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn simulate-bobs-weather-service []
-  (simulate bobs-weather-service-contract :port 8787 :client-origin "http://localhost:3000"))
+  (simulate (eval bobs-weather-service-contract) :port 8787 :client-origin "http://localhost:3000")
+  (browse-bobs-weather-service))
 
-(def updater (atom nil))
-(defn start-updater [] (swap! updater (constantly (create-city-updater))))
-(defn kill-updater [] (swap! updater #(do (future-cancel %) nil)))
+;;;;;;;;;;;;;;;
+;; Maybe we need to rethink the contract and put in some constraints
+;;;;;;;;;;;;;;;
 
-(defn main [& args]
-  (start-updater)
-  (start-bobs-weather-service)
-  (println "Any key to quit")
-  (read-line)
-  (stop-server)
-  (kill-updater))
+(def bobs-weather-service-contract-with-constraints
+  '(service 
+   "Bob's more realistic weather service"
+   (contract :city_list
+             "http://localhost:8787/cities"
+             (request
+              (method :get)
+              (header "content-type" "application/json"))
+             (response
+              (header "content-type" "application/json;charset=UTF-8")
+              (body
+               (content-type :json)
+               (matching-jsonpath "$.cities"
+                                  :of-type :object
+                                  (matching-jsonpath "$.name" :of-type :string)
+                                  (matching-jsonpath "$.temp" :of-type :number)))))))

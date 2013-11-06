@@ -1,13 +1,13 @@
 (ns janus.test.janus-test
   (:import [java.io Closeable])
   (:require [janus]
-            [janus.dsl :refer [service contract method url header matching-jsonpath request response content-type]]
+            [janus.verify :refer [verify-service]]
+            [janus.dsl :refer [service contract method url header matching-jsonpath request response content-type body]]
             [liberator.core :refer [resource]]
             [midje.sweet :refer :all]
             [compojure.core :refer [routes ANY]]
             [ring.util.serve :refer [serve* stop-server]]
             [ring.middleware.json :refer [wrap-json-response wrap-json-body]]))
-
 
 (defn serve-resource [resource]
   (let [routes (routes (ANY "/" [] resource))]
@@ -34,7 +34,7 @@
             {:id 1 :features ["a" "b"]})))]
   (fact "Can verify a single contract for a running service"
         (->
-         '(service "simple JSON service"
+         (service "simple JSON service"
                    (contract
                     :contract-foo
                     "http://localhost:8080/"
@@ -42,11 +42,11 @@
                      (method :get)
                      (header "Content-Type" "application/json"))
                     (response
-                     (body
+                     (body                      
                       (content-type :json)
                       (matching-jsonpath "$.id" :of-type :number)
                       (matching-jsonpath "$.features[*]" :matching #"[a-z]")))))
-         (janus/unsafe-verify)
+         (verify-service)
          (get-in [:results :contract-foo]))
 
         => (contains [[:result :succeeded]])))
