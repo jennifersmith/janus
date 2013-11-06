@@ -6,6 +6,8 @@
    [clj-http.client :as http]
    [clojure.data.json :as json]])
 
+(defn excerpt [data]
+  (str "[excerpt: " (apply str (take 100 (str data))) "]"))
 
 (def content-type->parser {:json json/read-json})
 
@@ -18,7 +20,7 @@
         {:result :failure 
          :message 
          [(str "Cannot parse as " content-type 
-                " excerpt: " (apply str (take 100 raw))
+               (excerpt raw)
                 ", exception message: " (.getMessage e))]}))
     [(str "Unrecognised content type " content-type)])) ;;NASSTY!
 
@@ -83,7 +85,7 @@
   (if-let [current (pred actual)]
     (do
       (mapcat #(check-body-clause current %) subclauses))
-    [(str "Expected " context " to be non-nil")]))
+    [(str "Expected " context " to be non-nil on " (excerpt actual))]))
 
 (defmethod check-body-clause :predfn [actual [_ pred context]]
   (try      
@@ -93,7 +95,7 @@
       )
     (catch Exception e
       [(str "Error applying predicate to "
-            " (excerpt: " (apply str (take 100 (str actual)))
+            (excerpt actual)
             ", exception message: " (.getMessage e))])))
 ;;=======
 ;; legacy split here... we actually used to do a whole bunch in the json response stuff
