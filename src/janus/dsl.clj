@@ -6,6 +6,28 @@
   ([path match expected & children]
      [:json-path path match expected (vec children)]))
 
+(defn fn-based-clause [fn context subclauses]
+  [:fn fn context (vec subclauses)])
+
+(defn predfn-based-clause [fn context]
+  [:predfn fn context])
+
+(def keyword->typecheck {:number number? :map map? :collection coll? :string string?})
+(defn of-type [type] 
+  (if-let [checker  (keyword->typecheck type) ]
+    (predfn-based-clause checker {:type type})
+    (throw (new Exception (str "No matching type checking fn found for " type)))))
+
+(defn should-have  [fn & subclauses]
+  (fn-based-clause fn {:key fn} subclauses))
+
+(defn should-match [regex]
+  [:all
+   [(of-type :string)
+    (predfn-based-clause #(re-matches regex %) {:matches regex})]])
+
+(defn each [& subclauses] 
+  [:each subclauses])
 (defn content-type [type] [:content-type type])
 (defn equal-to [expected] [:equal-to expected])
 
@@ -20,7 +42,6 @@
 
 (defn serialization [s11n]
   [:property {:name "serialization" :value s11n}])
-
 
 ;; not a lot going on now...
 (defn body [& clauses]

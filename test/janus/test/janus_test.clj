@@ -2,7 +2,7 @@
   (:import [java.io Closeable])
   (:require [janus]
             [janus.verify :refer [verify-service]]
-            [janus.dsl :refer [service contract method url header matching-jsonpath request response content-type body]]
+            [janus.dsl :refer :all]
             [liberator.core :refer [resource]]
             [midje.sweet :refer :all]
             [compojure.core :refer [routes ANY]]
@@ -44,9 +44,10 @@
                     (response
                      (body                      
                       (content-type :json)
-                      (matching-jsonpath "$.id" :of-type :number)
-                      (matching-jsonpath "$.features[*]" :matching #"[a-z]")))))
-         (verify-service)
+                      (should-have :id (of-type :number))
+                      (should-have :features (of-type :collection)
+                                   (each (should-match #"[a-z]")))))))
+         (verify-service {})
          (get-in [:results :contract-foo]))
 
         => (contains [[:result :succeeded]])))

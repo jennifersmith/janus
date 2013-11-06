@@ -1,7 +1,8 @@
 (ns janus.test.verify-test
   [:use janus.verify
    midje.sweet]
-  [:require [clj-http.client :as http]])
+  [:require [clj-http.client :as http]
+   [clojure.data.json :as json]])
 
 (unfinished )
 
@@ -16,11 +17,56 @@
       (validate-response  [[:header {:name "ct" :value "text/html"}]] {:result :ok :response {:headers {"ct" "app/json"}}} {})
       => ["Expected header 'ct' to equal 'text/html'. Got 'app/json'."])
 
-(fact "the body is checked depending on body type spec"
-      (validate-response  [[:body [[:content-type :json] [:foo :bar]]]] {:result :ok :response {:body "ok"}}  {})
+(fact "LEGACY: the body is checked depending on body type spec"
+      (validate-response  [[:body [[:content-type :json] [:foo :bar]]]] 
+                          {:result :ok :response {:body "{}"}}  {})
   => [..json-validation..]
-  (provided (janus.json-response/verify-document "ok" [[:content-type :json] [:foo :bar]])
-            => [..json-validation..]))
+  (provided (janus.json-response/verify-document "{}" [[:content-type :json] [:foo :bar]])
+            => [..json-validation..]
+            (check-body-clause anything anything) => []))
+
+(fact "fails if comes across a clause it doesnt understand"
+      (validate-response [[:body [[:content-type :json] [:foo 1]]]] 
+                         {:result :ok :response  {:body "{}"}} {}) 
+      => (contains "CONTRACT ERROR: :foo is not an understood body clause"))
+
+(fact "check-clause for body delegates to the body checking stuff for each clause"
+      (check-clause ..actual.. [:body [ [:content-type :json] 
+                                        ..clause1.. 
+                                        ..clause2..]]) => [..res1.. ..res2..]
+      (provided
+       ..actual.. =contains=> {:body ..raw-body..}
+       (safe-parse :json ..raw-body..) => {:result :success :parsed ..body..}
+       (janus.json-response/verify-document anything anything) => []
+       (check-body-clause ..body.. ..clause1..) => [..res1..]
+       (check-body-clause ..body.. ..clause2..) => [..res2..]
+       (check-body-clause ..body.. [:content-type :json]) => []))
+
+(fact "checking-body-clause evals fn and prints out contextual error message"
+      (check-body-clause {} [:fn :foo "my-fn"]) => ["Expected my-fn to be non-nil"]
+      (check-body-clause {:foo 1} [:fn :foo "my-fn"]) => [])
+
+(fact "checking fn based clauses checks subclauses too if sub passes"
+      (check-body-clause {:foo 1} [:fn :foo {:key :foo} 
+                                   [[:predfn number? {:type :number}]]]) => [])
+
+(fact "all clause validates both constraints"
+      (check-body-clause {:foo 1 :bar 1} [:all [[:fn :foo :foo] [:fn :bar :bar]]]) => []
+      (check-body-clause {:fo 1 :bar 1} [:all [[:fn :foo :foo] [:fn :bar :bar]]]) => ["Expected :foo to be non-nil"]
+      (check-body-clause {:foo 1 :ba 1} [:all [[:fn :foo :foo] [:fn :bar :bar]]]) => ["Expected :bar to be non-nil"])
+
+(fact "Each validates that the given is a coll and validates each against it"
+      (check-body-clause [1,2,3] [:each [[:predfn number? {:type :number}]
+                                                [:predfn #(>= % 1) {:greater-than 1}]]])=> []
+      (check-body-clause [1,2,3] [:each [[:predfn string? {:type :string}]
+                                         [:predfn #(= "bar" %) {:equals "bar"}]]])=>
+                                         (contains ["Expected 2 to be {:equals \"bar\"}"
+                                                    "Expected 2 to be {:type :string}"] :in-any-order))
+
+(fact "checking fn based clause bubbles up error messages from sub clauses with context"
+      (check-body-clause {:foo "bob"} [:fn :foo {:key :foo} 
+                                   [[:predfn number? {:type :number}]]]) => 
+                                   ["Expected bob to be {:type :number}"])
 
 (against-background [..contract.. =contains=> {:properties []}
                      ..context.. =contains=> {:properties []}]

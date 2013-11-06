@@ -187,7 +187,7 @@
               (header "content-type" "application/json;charset=UTF-8")
               (body
                (content-type :json)
-               (matching-jsonpath "$.cities"
-                                  :of-type :object
-                                  (matching-jsonpath "$.name" :of-type :string)
-                                  (matching-jsonpath "$.temp" :of-type :number)))))))
+               (should-have :cities
+                                  (of-type :collection)
+                                  (should-have-name :name :of-type :string)
+                                  (should-have-name :temp :of-type :number)))))))

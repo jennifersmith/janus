@@ -3,10 +3,26 @@
    [json-path]
    [clojure.data.json :as json]
    [clojure.data.xml :as xml]
-   [clj-http.client :as http]])
+   [clj-http.client :as http]
+   [clojure.data.json :as json]])
 
 
-;; TODO : we should make request a map ... needs to group header stuff under headers first
+(def content-type->parser {:json json/read-json})
+
+
+(defn safe-parse [content-type raw]
+  (if-let [parser (content-type->parser content-type)]
+    (try      
+      {:result :success :parsed (parser raw)}
+      (catch Exception e
+        {:result :failure 
+         :message 
+         [(str "Cannot parse as " content-type 
+                " excerpt: " (apply str (take 100 raw))
+                ", exception message: " (.getMessage e))]}))
+    [(str "Unrecognised content type " content-type)])) ;;NASSTY!
+
+;; Todo : we should make request a map ... needs to group header stuff under headers first
 ;; when it is a map, it basically *is* a ring request which is convienient
 (defn multi-property [prop-name contract]
   (->> contract
@@ -22,7 +38,7 @@
           (concat (:clauses contract) (:clauses context))))
 
 ;;; gonna be strict on content types for now
-(defn get-verifier [doc-type]
+(defn get-legacy-verifier [doc-type]
   (case doc-type
    :json janus.json-response/verify-document
    (constantly [(str "Unable to verify documents of type '" doc-type "'")])))
@@ -44,10 +60,56 @@
      [(str "Expected header '" name "' to equal '" value "'. Got '" actual "'.")]
      [])))
 
+;;=======
+(def check-body-clause nil)
+(defmulti check-body-clause (fn [_ clause]  (first clause)))
+
+(defmethod check-body-clause :default [_ [clause & _]]
+  [(str "CONTRACT ERROR: " clause " is not an understood body clause")])
+
+(defmethod check-body-clause :json-path [& _]
+  (println "WARNING: using legacy matchers")
+  [])
+
+(defmethod check-body-clause :all [body [_ clauses]]
+  (mapcat #(check-body-clause body %) clauses))
+
+(defmethod check-body-clause :each [values [_ clauses]]
+  (flatten (for [value values clause clauses]
+             (check-body-clause value clause))))
+;; TODO: Move content type to the head 
+(defmethod check-body-clause :content-type [& _])
+(defmethod check-body-clause :fn [actual [_ pred context subclauses]]
+  (if-let [current (pred actual)]
+    (do
+      (mapcat #(check-body-clause current %) subclauses))
+    [(str "Expected " context " to be non-nil")]))
+
+(defmethod check-body-clause :predfn [actual [_ pred context]]
+  (try      
+    (if-not (pred actual)
+      [(str "Expected " actual " to be " context)]
+      []
+      )
+    (catch Exception e
+      [(str "Error applying predicate to "
+            " (excerpt: " (apply str (take 100 (str actual)))
+            ", exception message: " (.getMessage e))])))
+;;=======
+;; legacy split here... we actually used to do a whole bunch in the json response stuff
+;; I don't think need to as data is clj data structure - going to retire some of this stuf
+;; can then tighten up a lot of verif
+
 (defmethod check-clause :body [actual-response [_ body-clauses]]
   (let [ body (:body actual-response)
-        verifier (get-verifier (property-new :content-type body-clauses))]
-    (verifier body body-clauses)))
+        content-type (property-new :content-type body-clauses)
+        legacy-verifier (get-legacy-verifier content-type)
+        {:keys [parsed result message]} (safe-parse (property-new :content-type body-clauses) body)]
+    (if (= :success result)
+      (concat
+       (mapcat (partial check-body-clause parsed) body-clauses)
+       (legacy-verifier body body-clauses))
+      message)))
 
 (defn property [prop-name contract context]
   (:value (first (filter #(= prop-name (:name %))
