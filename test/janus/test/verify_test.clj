@@ -43,7 +43,7 @@
        (check-body-clause ..body.. [:content-type :json]) => []))
 
 (fact "checking-body-clause evals fn and prints out contextual error message"
-      (check-body-clause {} [:fn :foo "my-fn"]) => ["Expected my-fn to be non-nil"]
+      (check-body-clause {} [:fn :foo "my-fn"]) => ["Expected my-fn to be non-nil on {}"]
       (check-body-clause {:foo 1} [:fn :foo "my-fn"]) => [])
 
 (fact "checking fn based clauses checks subclauses too if sub passes"
@@ -52,8 +52,8 @@
 
 (fact "all clause validates both constraints"
       (check-body-clause {:foo 1 :bar 1} [:all [[:fn :foo :foo] [:fn :bar :bar]]]) => []
-      (check-body-clause {:fo 1 :bar 1} [:all [[:fn :foo :foo] [:fn :bar :bar]]]) => ["Expected :foo to be non-nil"]
-      (check-body-clause {:foo 1 :ba 1} [:all [[:fn :foo :foo] [:fn :bar :bar]]]) => ["Expected :bar to be non-nil"])
+      (check-body-clause {:fo 1 :bar 1} [:all [[:fn :foo :foo] [:fn :bar :bar]]]) => ["Expected :foo to be non-nil on {:bar 1, :fo 1}"]
+      (check-body-clause {:foo 1 :ba 1} [:all [[:fn :foo :foo] [:fn :bar :bar]]]) => ["Expected :bar to be non-nil on {:foo 1, :ba 1}"])
 
 (fact "Each validates that the given is a coll and validates each against it"
       (check-body-clause [1,2,3] [:each [[:predfn number? {:type :number}]
@@ -62,6 +62,11 @@
                                          [:predfn #(= "bar" %) {:equals "bar"}]]])=>
                                          (contains ["Expected 2 to be {:equals \"bar\"}"
                                                     "Expected 2 to be {:type :string}"] :in-any-order))
+;; todo : if it ait a coll?
+(fact "with-length-between checks something has a sufficient count"
+      (check-body-clause [1,2,3] [:with-length-between 0 5])=> []
+      (check-body-clause [1,2,3] [:with-length-between 6 10])=> ["Expected [1 2 3] to have length between 6 and 10"]
+      (check-body-clause [1,2,3] [:with-length-between 0 1])=> ["Expected [1 2 3] to have length between 0 and 1"])
 
 (fact "checking fn based clause bubbles up error messages from sub clauses with context"
       (check-body-clause {:foo "bob"} [:fn :foo {:key :foo} 

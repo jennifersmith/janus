@@ -17,6 +17,8 @@
 (fact "each for checking colls"
       (each ..subclause..) => [:each [..subclause..]])
 
+(fact "with-length-between"
+      (with-length-between 0 100) [:with-length-between 0 100])
 
 (fact "regex match"
       (should-match ..reg..) =>  

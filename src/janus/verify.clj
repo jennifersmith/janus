@@ -7,10 +7,9 @@
    [clojure.data.json :as json]])
 
 (defn excerpt [data]
-  (str "[excerpt: " (apply str (take 100 (str data))) "]"))
+  (apply str (take 100 (str data))))
 
 (def content-type->parser {:json json/read-json})
-
 
 (defn safe-parse [content-type raw]
   (if-let [parser (content-type->parser content-type)]
@@ -75,6 +74,12 @@
 
 (defmethod check-body-clause :all [body [_ clauses]]
   (mapcat #(check-body-clause body %) clauses))
+
+(defmethod check-body-clause :with-length-between [actual [_ from to]]
+  (if-not (<= from (count actual) to)
+    [(str "Expected " (excerpt actual) " to have length between " from " and " to)]
+    []))
+
 
 (defmethod check-body-clause :each [values [_ clauses]]
   (flatten (for [value values clause clauses]

@@ -24,8 +24,7 @@
   (-> routes
       (wrap-content-type)
       (wrap-cors :access-control-allow-origin #"http://localhost:3000")
-;;      (wrap-trace :header :ui)
-      ))
+      (wrap-trace :header :ui)))
 
 (defn adjust-temp [current]
   (let [[up-weight down-weight maintain-weight]
@@ -34,9 +33,9 @@
           [false true false false] [50 10 40]
           [false false true false] [10 50 40]
           [false false false true] [0 100 0]
-          [25 25 50]
+          [15 35 50]
           )]
-    (generators/weighted {current maintain-weight (inc current) up-weight (dec current) down-weight })))
+    (generators/weighted {current maintain-weight (inc current) up-weight (dec current) down-weight})))
 
  (defn adjust-temps [current]
      (map #(update-in %1 [:temp] adjust-temp )
@@ -46,27 +45,23 @@
 ;; weather readings
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def city-data (atom 
-                [{:name "Melbourne" 
-                  :temp 16 
-                  :outlook {
-                            :today "Monsoon" 
-                            :tomorrow "Heat wave"}}
-                 {:name "London" 
-                  :temp 7 
-                  :outlook {
-                            :today "Rain" 
-                            :tomorrow "More bloody rain"}}
-                 {:name "Chicago" 
-                  :temp 3 
-                  :outlook {
-                            :today "High winds" 
-                            :tomorrow "High winds"}}]))
+(def city-data (atom nil)
 
+(reset-city-data!)
+
+(defn reset-city-data! []
+  (swap! @city-data (fn [_] [{:name "Melbourne" 
+                   :temp 16 }
+                  {:name "London" 
+                   :temp 7 }
+                  {:name "Chicago" 
+                   :temp 3}])))
+;; (pprint city-data)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; simulate reading the weather
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (def  city-updater (atom nil))
+
 (defn create-city-updater []
   (if @city-updater
     (future-cancel @city-updater))
@@ -79,6 +74,21 @@
                  (Thread/sleep sleep-time)        
                  (recur)))))))
 
+;; Simlate
+;; (crear-zipper -updaer
+
+
+
+
+
+
+
+
+
+
+
+;; START DEMO!
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Cities resource (liberator)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -87,6 +97,8 @@
   :available-media-types ["application/json"]
   :handle-ok (fn [ctx] {:cities @city-data}))
 
+;; serving up a city-data atom
+;; (pprint @city-data)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; start the weather service on port 8787
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -98,11 +110,12 @@
     (browse-bobs-weather-service)
     (create-city-updater)))
 
+;;(start-bobs-weather-service)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Define our consumer contract for Bob's weather service
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (def bobs-weather-service-contract
-  '(service 
+  (service 
    "Bob's weather service"
    (contract :city_list
              "http://localhost:8787/cities"
@@ -119,13 +132,15 @@
                              (should-have :name (of-type :string))
                              (should-have :temp (of-type :number)))))))))
 
+;; the format is a bit of a mess but is a good data representation of our contract
+;; (pprint bobs-weather-service-contract)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Let's check the service against the contract
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn verify-bobs-weather-serivce []
   (pprint
-   (verify/verify-service (eval bobs-weather-service-contract) {})))
-
+   (verify/verify-service bobs-weather-service-contract {})))
+;; (verify-bobs-weather-serivce)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Clojurescript weather dashboard
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -133,6 +148,7 @@
 (def browse-jens-weather-dashboard
   (partial browse-url "http://localhost:3000/"))
 
+;; (browse-jens-weather-dashboard)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; If the service stops meeting the contract...
@@ -146,7 +162,7 @@
 ;;;;;;;;;;;;;;;
 
 (defn restore-names []
-  (swap! city-data (partial map #(assoc %2 :name %1) ["Melbourne" "London" "Chicago"] )))
+  (swap! city-data (partial map #(assoc %2 :name %1)  ["Melbourne" "London" "Chicago"] )))
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; If the service gets some additive changes
@@ -172,28 +188,4 @@
   (simulate (eval bobs-weather-service-contract) :port 8787 :client-origin "http://localhost:3000")
   (browse-bobs-weather-service))
 
-;;;;;;;;;;;;;;;
-;; Maybe we need to rethink the contract and put in some constraints
-;;;;;;;;;;;;;;;
 
-(def bobs-weather-service-contract-with-constraints
-  '(service 
-   "Bob's more realistic weather service"
-   (contract :city_list
-             "http://localhost:8787/cities"
-             (request
-              (method :get)
-              (header "content-type" "application/json"))
-             (response
-              (header "content-type" "application/json;charset=UTF-8")
-              (body
-               (content-type :json)
-               (should-have :cities
-                                  (of-type :collection)
-                                  (each
-                                   (should-have :name (of-type :string))
-                                   (should-have :temp (of-type :number)))))))))
-
-(defn verify-bobs-weather-serivce-with-constraints []
-  (pprint
-   (verify/verify-service (eval bobs-weather-service-contract-with-constraints) {})))

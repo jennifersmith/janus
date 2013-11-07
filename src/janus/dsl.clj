@@ -13,6 +13,10 @@
   [:predfn fn context])
 
 (def keyword->typecheck {:number number? :map map? :collection coll? :string string?})
+
+(defn with-length-between [from to]
+  [:with-length-between from to])
+
 (defn of-type [type] 
   (if-let [checker  (keyword->typecheck type) ]
     (predfn-based-clause checker {:type type})

@@ -46,10 +46,10 @@
                       (content-type :json)
                       (should-have :id (of-type :number))
                       (should-have :features (of-type :collection)
+                                   (with-length-between 2 8)
                                    (each (should-match #"[a-z]")))))))
          (verify-service {})
          (get-in [:results :contract-foo]))
-
         => (contains [[:result :succeeded]])))
 
 (against-background
