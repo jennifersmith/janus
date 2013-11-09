@@ -42,3 +42,6 @@
 (future-fact "constraints to count you ask for"
       (count (generate-data (each [0 100]
                              (of-type :number)))) => (roughly 0 100))
+
+(future-fact "constrains to the range you ask for ")
+

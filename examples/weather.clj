@@ -33,7 +33,7 @@
           [false true false false] [50 10 40]
           [false false true false] [10 50 40]
           [false false false true] [0 100 0]
-          [15 35 50]
+          [25 25 50]
           )]
     (generators/weighted {current maintain-weight (inc current) up-weight (dec current) down-weight})))
 
@@ -45,17 +45,17 @@
 ;; weather readings
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def city-data (atom nil)
+(def city-data (atom nil))
 
-(reset-city-data!)
 
 (defn reset-city-data! []
-  (swap! @city-data (fn [_] [{:name "Melbourne" 
+  (swap! city-data (fn [_] [{:name "Melbourne" 
                    :temp 16 }
                   {:name "London" 
                    :temp 7 }
                   {:name "Chicago" 
                    :temp 3}])))
+
 ;; (pprint city-data)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; simulate reading the weather
@@ -92,7 +92,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Cities resource (liberator)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;;(reset-city-data!)
 (defresource cities
   :available-media-types ["application/json"]
   :handle-ok (fn [ctx] {:cities @city-data}))
@@ -114,23 +114,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Define our consumer contract for Bob's weather service
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (def bobs-weather-service-contract
   (service 
    "Bob's weather service"
    (contract :city_list
              "http://localhost:8787/cities"
-             (request
-              (method :get)
-              (header "content-type" "application/json"))
+             (request (method :get))
              (response
-              (header "content-type" "application/json;charset=UTF-8")
               (body
                (content-type :json)
-               (should-have :cities
-                            (of-type :collection)
-                            (each
-                             (should-have :name (of-type :string))
-                             (should-have :temp (of-type :number)))))))))
+               (should-have
+                :cities
+                (each
+                 (should-have :name (of-type :string))
+                 (should-have :temp (of-type :number)))))))))
 
 ;; the format is a bit of a mess but is a good data representation of our contract
 ;; (pprint bobs-weather-service-contract)
@@ -157,6 +155,7 @@
 (defn remove-names []
   (swap! city-data (partial map #(dissoc % :name))))
 
+;; (remove-names)
 ;;;;;;;;;;;;;;
 ;;; restore data
 ;;;;;;;;;;;;;;;
@@ -164,6 +163,8 @@
 (defn restore-names []
   (swap! city-data (partial map #(assoc %2 :name %1)  ["Melbourne" "London" "Chicago"] )))
 
+;; (restore-names)
+;; ;;(reset-city-data!)
 ;;;;;;;;;;;;;;;;;;;;
 ;; If the service gets some additive changes
 ;;;;;;;;;;;;;;;;;;;;
@@ -178,6 +179,8 @@
                              {
                               :today "High winds" 
                               :tomorrow "High winds"}])))
+;;(add-outlook)
+;;(browse-bobs-weather-service)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Calling out to the live API might be impractical - maybe costs $$ or is unreliable.
@@ -185,7 +188,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn simulate-bobs-weather-service []
-  (simulate (eval bobs-weather-service-contract) :port 8787 :client-origin "http://localhost:3000")
+  (simulate bobs-weather-service-contract :port 8787 :client-origin "http://localhost:3000")
   (browse-bobs-weather-service))
 
 
+;; (simulate-bobs-weather-service)
+;; 
