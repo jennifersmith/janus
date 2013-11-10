@@ -17,30 +17,27 @@
       (validate-response  [[:header {:name "ct" :value "text/html"}]] {:result :ok :response {:headers {"ct" "app/json"}}} {})
       => ["Expected header 'ct' to equal 'text/html'. Got 'app/json'."])
 
-(fact "LEGACY: the body is checked depending on body type spec"
-      (validate-response  [[:body [[:content-type :json] [:foo :bar]]]] 
+(fact "the body is checked depending on body type spec"
+      (validate-response  [[:json-body [[:foo :bar]]]] 
                           {:result :ok :response {:body "{}"}}  {})
   => [..json-validation..]
-  (provided (janus.json-response/verify-document "{}" [[:content-type :json] [:foo :bar]])
+  (provided (janus.json-response/verify-document "{}" [[:foo :bar]])
             => [..json-validation..]
             (check-body-clause anything anything) => []))
 
 (fact "fails if comes across a clause it doesnt understand"
-      (validate-response [[:body [[:content-type :json] [:foo 1]]]] 
+      (validate-response [[:json-body [[:foo 1]]]] 
                          {:result :ok :response  {:body "{}"}} {}) 
       => (contains "CONTRACT ERROR: :foo is not an understood body clause"))
 
 (fact "check-clause for body delegates to the body checking stuff for each clause"
-      (check-clause ..actual.. [:body [ [:content-type :json] 
-                                        ..clause1.. 
-                                        ..clause2..]]) => [..res1.. ..res2..]
+      (check-clause ..actual.. [:json-body [..clause1.. ..clause2..]]) => [..res1.. ..res2..]
       (provided
        ..actual.. =contains=> {:body ..raw-body..}
        (safe-parse :json ..raw-body..) => {:result :success :parsed ..body..}
        (janus.json-response/verify-document anything anything) => []
        (check-body-clause ..body.. ..clause1..) => [..res1..]
-       (check-body-clause ..body.. ..clause2..) => [..res2..]
-       (check-body-clause ..body.. [:content-type :json]) => []))
+       (check-body-clause ..body.. ..clause2..) => [..res2..]))
 
 (fact "checking-body-clause evals fn and prints out contextual error message"
       (check-body-clause {} [:fn :foo "my-fn"]) => ["Expected my-fn to be non-nil on {}"]
@@ -100,16 +97,6 @@
   (to-xml [:tag "blah"]) => (contains "<tag>blah</tag>")
   (to-xml [:tag "blah" [:sub {:attr "val"}]]) => (contains "<tag>blah<sub attr=\"val\"></sub></tag"))
 
-(fact
-  (body-from ..contract.. {}) => "data"
-  (provided
-    ..contract.. =contains=> {:body {:type :string :data "data"}})
-  (body-from ..contract.. {}) => "[\"a\",\"b\",{\"c\":\"hello\"}]"
-  (provided
-    ..contract.. =contains=> {:body {:type :json :data ["a", "b", {"c" "hello"}]}})
-  (body-from ..contract.. {}) => (contains "<tag attr=\"value\"></tag>")
-  (provided
-    ..contract.. =contains=> {:body {:type :xml :data [:tag {:attr "value"}]}}))
 
 (facts
  (verify-service {:name "svc" :contracts [{:name "c1"}]} ..context..) =>  {:service "svc" :results {"c1" ..res..}}

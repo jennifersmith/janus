@@ -32,7 +32,7 @@
 
 (defn each [& subclauses] 
   [:each subclauses])
-(defn content-type [type] [:content-type type])
+
 (defn equal-to [expected] [:equal-to expected])
 
 (defn url [path]
@@ -47,9 +47,9 @@
 (defn serialization [s11n]
   [:property {:name "serialization" :value s11n}])
 
-;; not a lot going on now...
-(defn body [& clauses]
-  [:body clauses])
+
+(defn json-body [& clauses]
+  [:json-body clauses])
 
 (defn header [name value]
   [:header {:name name :value value}])

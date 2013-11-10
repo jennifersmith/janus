@@ -1,0 +1,815 @@
+Stopped web server
+Started web server on port 8080
+Stopped web server
+Started web server on port 8080
+Stopped web server
+Started web server on port 8080
+
+FAIL "Should fail verification if we attempt a get on a post-only resource" at (janus_test.clj:70)
+    Expected: ["Shopping: One-way" :failed [["GET valid search" :failed ["Expected status 200. Got status 405"]]]]
+      Actual: ["Shopping: One-way" :failed (["GET valid search" :failed ("Expected status 200. Got status 405" "Unable to verify documents of type 'text/plain;charset=ISO-8859-1'")])]
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:84)
+
+FAIL "Should fail verification if we attempt a get on a post-only resource" at (form-init2636497206829756094.clj:2)
+    Expected: ["Shopping: One-way" :failed [["GET valid search" :failed ["Expected status 200. Got status 405"]]]]
+      Actual: ["Shopping: One-way" :failed (["GET valid search" :failed ("Expected status 200. Got status 405" "Unable to verify documents of type 'text/plain;charset=ISO-8859-1'")])]
+Stopped web server
+Started web server on port 8080
+Stopped web server
+Started web server on port 8080
+Stopped web server
+Started web server on port 8080
+
+FAIL "Should fail verification if we attempt a get on a post-only resource" at (janus_test.clj:71)
+    Expected: ["Shopping: One-way" :failed [["GET valid search" :failed ["Expected status 200. Got status 405"]]]]
+      Actual: ["Shopping: One-way" :failed (["GET valid search" :failed ("Expected status 200. Got status 500" "Unable to verify documents of type 'text/html;charset=ISO-8859-1'")])]
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:85)
+
+FAIL "Should fail verification if we attempt a get on a post-only resource" at (form-init2636497206829756094.clj:2)
+    Expected: ["Shopping: One-way" :failed [["GET valid search" :failed ["Expected status 200. Got status 405"]]]]
+      Actual: ["Shopping: One-way" :failed (["GET valid search" :failed ("Expected status 200. Got status 500" "Unable to verify documents of type 'text/html;charset=ISO-8859-1'")])]
+Stopped web server
+Started web server on port 8080
+Stopped web server
+Started web server on port 8080
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:47)
+    Expected: ["simple JSON service" :failed [["GET document" :failed ["Expected \"10\" to match regex [a-z], at path $.features[*]"]]]]
+      Actual: ["simple JSON service" :succeeded]
+Stopped web server
+Started web server on port 8080
+
+FAIL "Should fail verification if we attempt a get on a post-only resource" at (janus_test.clj:71)
+    Expected: ["Shopping: One-way" :failed [["GET valid search" :failed ["Expected status 200. Got status 405"]]]]
+      Actual: ["Shopping: One-way" :failed (["GET valid search" :failed ("Expected status 200. Got status 500")])]
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:85)
+Stopped web server
+Started web server on port 8080
+Stopped web server
+Started web server on port 8080
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:47)
+    Expected: ["simple JSON service" :failed [["GET document" :failed ["Expected \"10\" to match regex [a-z], at path $.features[*]"]]]]
+      Actual: ["simple JSON service" :succeeded]
+Stopped web server
+Started web server on port 8080
+
+FAIL "Should fail verification if we attempt a get on a post-only resource" at (janus_test.clj:71)
+    Expected: ["Shopping: One-way" :failed [["GET valid search" :failed ["Expected status 200. Got status 405"]]]]
+      Actual: ["Shopping: One-way" :failed (["GET valid search" :failed ("Expected status 200. Got status 500")])]
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:85)
+
+FAIL "Should fail verification if we attempt a get on a post-only resource" at (form-init2636497206829756094.clj:2)
+    Expected: ["Shopping: One-way" :failed [["GET valid search" :failed ["Expected status 200. Got status 405"]]]]
+      Actual: ["Shopping: One-way" :failed (["GET valid search" :failed ("Expected status 200. Got status 500")])]
+Stopped web server
+Started web server on port 8080
+Stopped web server
+Started web server on port 8080
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:47)
+    Expected: ["simple JSON service" :failed [["GET document" :failed ["Expected \"10\" to match regex [a-z], at path $.features[*]"]]]]
+      Actual: ["simple JSON service" :succeeded]
+Stopped web server
+Started web server on port 8080
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:84)
+Stopped web server
+Started web server on port 8080
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:32)
+    Expected: ["simple JSON service" :succeeded]
+      Actual: clojure.lang.ArityException: Wrong number of args (2) passed to: core$first
+              janus.verify$verify_contract.invoke(verify.clj:86)
+              janus.verify$verify_service$fn__12242.invoke(verify.clj:93)
+              janus.verify$verify_service.invoke(verify.clj:94)
+              janus$unsafe_verify.invoke(janus.clj:11)
+              janus.test.janus_test$eval12263$fn__12264$fn__12265$fn__12266$fn__12267$fn__12268.invoke(janus_test.clj:29)
+              janus.test.janus_test$eval12263$fn__12264$fn__12265$fn__12266$fn__12267.invoke(janus_test.clj:29)
+              janus.test.janus_test$eval12263$fn__12264$fn__12265$fn__12266.invoke(janus_test.clj:29)
+              janus.test.janus_test$eval12263$fn__12264$fn__12265.invoke(janus_test.clj:29)
+              janus.test.janus_test$eval12263$fn__12264.invoke(janus_test.clj:29)
+              janus.test.janus_test$eval12263.invoke(janus_test.clj:29)
+              janus.test.janus_test$eval12246.invoke(form-init2636497206829756094.clj:1)
+Stopped web server
+Started web server on port 8080
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:47)
+    Expected: ["simple JSON service" :failed [["GET document" :failed ["Expected \"10\" to match regex [a-z], at path $.features[*]"]]]]
+      Actual: clojure.lang.ArityException: Wrong number of args (2) passed to: core$first
+              janus.verify$verify_contract.invoke(verify.clj:86)
+              janus.verify$verify_service$fn__12242.invoke(verify.clj:93)
+              janus.verify$verify_service.invoke(verify.clj:94)
+              janus$unsafe_verify.invoke(janus.clj:11)
+              janus.test.janus_test$eval12281$fn__12282$fn__12283$fn__12284$fn__12285$fn__12286.invoke(janus_test.clj:43)
+              janus.test.janus_test$eval12281$fn__12282$fn__12283$fn__12284$fn__12285.invoke(janus_test.clj:43)
+              janus.test.janus_test$eval12281$fn__12282$fn__12283$fn__12284.invoke(janus_test.clj:43)
+              janus.test.janus_test$eval12281$fn__12282$fn__12283.invoke(janus_test.clj:43)
+              janus.test.janus_test$eval12281$fn__12282.invoke(janus_test.clj:43)
+              janus.test.janus_test$eval12281.invoke(janus_test.clj:43)
+              janus.test.janus_test$eval12246.invoke(form-init2636497206829756094.clj:1)
+Stopped web server
+Started web server on port 8080
+
+FAIL "Should fail verification if we attempt a get on a post-only resource" at (janus_test.clj:70)
+    Expected: ["Shopping: One-way" :failed [["GET valid search" :failed ["Expected status 200. Got status 405"]]]]
+      Actual: clojure.lang.ArityException: Wrong number of args (2) passed to: core$first
+              janus.verify$verify_contract.invoke(verify.clj:86)
+              janus.verify$verify_service$fn__12242.invoke(verify.clj:93)
+              janus.verify$verify_service.invoke(verify.clj:94)
+              janus$unsafe_verify.invoke(janus.clj:11)
+              janus.test.janus_test$eval12299$fn__12300$fn__12301$fn__12306$fn__12307$fn__12308.invoke(janus_test.clj:60)
+              janus.test.janus_test$eval12299$fn__12300$fn__12301$fn__12306$fn__12307.invoke(janus_test.clj:60)
+              janus.test.janus_test$eval12299$fn__12300$fn__12301$fn__12306.invoke(janus_test.clj:60)
+              janus.test.janus_test$eval12299$fn__12300$fn__12301.invoke(janus_test.clj:60)
+              janus.test.janus_test$eval12299$fn__12300.invoke(janus_test.clj:60)
+              janus.test.janus_test$eval12299.invoke(janus_test.clj:60)
+              janus.test.janus_test$eval12246.invoke(form-init2636497206829756094.clj:1)
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:84)
+Stopped web server
+Started web server on port 8080
+Stopped web server
+Started web server on port 8080
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:47)
+    Expected: ["simple JSON service" :failed [["GET document" :failed ["Expected \"10\" to match regex [a-z], at path $.features[*]"]]]]
+      Actual: ["simple JSON service" :succeeded]
+Stopped web server
+Started web server on port 8080
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:84)
+Stopped web server
+Started web server on port 8080
+()
+
+FAIL "Can verify a single contract for a running service" at (form-init2636497206829756094.clj:5)
+    Expected: ["simple JSON service" :failed [["GET document" :failed ["Expected \"10\" to match regex [a-z], at path $.features[*]"]]]]
+      Actual: ["simple JSON service" :succeeded]
+Stopped web server
+Started web server on port 8080
+Stopped web server
+Started web server on port 8080
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:47)
+    Expected: ["simple JSON service" :failed [["GET document" :failed ["Expected \"10\" to match regex [a-z], at path $.features[*]"]]]]
+      Actual: ["simple JSON service" :failed (["GET document" :failed "Expected \"10\" to match regex [a-z], at path $.features[*]"])]
+Stopped web server
+Started web server on port 8080
+
+FAIL "Should fail verification if we attempt a get on a post-only resource" at (janus_test.clj:70)
+    Expected: ["Shopping: One-way" :failed [["GET valid search" :failed ["Expected status 200. Got status 405"]]]]
+      Actual: ["Shopping: One-way" :failed (["GET valid search" :failed "Expected status 200. Got status 405"])]
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:84)
+Stopped web server
+Started web server on port 8080
+Stopped web server
+Started web server on port 8080
+Stopped web server
+Started web server on port 8080
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:84)
+
+user> 
+#<Namespace janus.test.janus-test>
+janus.test.janus-test> (stop-server)
+Stopped web server
+nil
+Stopped web server
+Started web server on port 8080
+Stopped web server
+Started web server on port 8080
+Stopped web server
+Started web server on port 8080
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:83)
+
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx]
+                                  )
+                    :handle-created (fn [ctx] {:status :awesome})))))
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [false ctx]
+                                  )
+                    :handle-created (fn [ctx] {:status :awesome})))))
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [true ctx]
+                                  )
+                    :handle-created (fn [ctx] {:status :awesome})))))
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test> 
+Stopped web server
+Started web server on port 8080
+nil
+Stopped web server
+Started web server on port 3000
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:33)
+    Expected: ["simple JSON service" :succeeded]
+      Actual: org.apache.http.conn.HttpHostConnectException: Connection to http://localhost:8080 refused
+              org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:158)
+              org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:149)
+              org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:121)
+              org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:573)
+              org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:425)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:820)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:754)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:732)
+              clj_http.core$request.invoke(core.clj:217)
+              clj_http.client$wrap_query_params$fn__1347.invoke(client.clj:216)
+              clj_http.client$wrap_user_info$fn__1357.invoke(client.clj:240)
+              clj_http.client$wrap_url$fn__1372.invoke(client.clj:262)
+              clj_http.client$wrap_redirects$fn__1286.invoke(client.clj:55)
+              clj_http.client$wrap_decompression$fn__1295.invoke(client.clj:79)
+              clj_http.client$wrap_input_coercion$fn__1312.invoke(client.clj:164)
+              clj_http.client$wrap_output_coercion$fn__1301.invoke(client.clj:88)
+              clj_http.client$wrap_exceptions$fn__1276.invoke(client.clj:35)
+              clj_http.client$wrap_basic_auth$fn__1352.invoke(client.clj:230)
+              clj_http.client$wrap_accept$fn__1327.invoke(client.clj:184)
+              clj_http.client$wrap_accept_encoding$fn__1333.invoke(client.clj:195)
+              clj_http.client$wrap_content_type$fn__1322.invoke(client.clj:176)
+              clj_http.client$wrap_form_params$fn__1367.invoke(client.clj:257)
+              clj_http.client$wrap_method$fn__1362.invoke(client.clj:245)
+              clj_http.cookies$wrap_cookies$fn__876.invoke(cookies.clj:116)
+              clj_http.client$wrap_unknown_host$fn__1377.invoke(client.clj:268)
+              janus.verify$verify_contract.invoke(verify.clj:82)
+              janus.verify$verify_service$fn__12722.invoke(verify.clj:93)
+              janus.verify$verify_service.invoke(verify.clj:94)
+              janus$unsafe_verify.invoke(janus.clj:11)
+              janus.test.janus_test$eval13008$fn__13009$fn__13010$fn__13011$fn__13012$fn__13013.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13008$fn__13009$fn__13010$fn__13011$fn__13012.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13008$fn__13009$fn__13010$fn__13011.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13008$fn__13009$fn__13010.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13008$fn__13009.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13008.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval12991.invoke(form-init2636497206829756094.clj:1)
+
+Stopped web server
+Started web server on port 3000
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:48)
+    Expected: ["simple JSON service" :failed [["GET document" :failed ["Expected \"10\" to match regex [a-z], at path $.features[*]"]]]]
+      Actual: org.apache.http.conn.HttpHostConnectException: Connection to http://localhost:8080 refused
+              org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:158)
+              org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:149)
+              org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:121)
+              org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:573)
+              org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:425)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:820)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:754)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:732)
+              clj_http.core$request.invoke(core.clj:217)
+              clj_http.client$wrap_query_params$fn__1347.invoke(client.clj:216)
+              clj_http.client$wrap_user_info$fn__1357.invoke(client.clj:240)
+              clj_http.client$wrap_url$fn__1372.invoke(client.clj:262)
+              clj_http.client$wrap_redirects$fn__1286.invoke(client.clj:55)
+              clj_http.client$wrap_decompression$fn__1295.invoke(client.clj:79)
+              clj_http.client$wrap_input_coercion$fn__1312.invoke(client.clj:164)
+              clj_http.client$wrap_output_coercion$fn__1301.invoke(client.clj:88)
+              clj_http.client$wrap_exceptions$fn__1276.invoke(client.clj:35)
+              clj_http.client$wrap_basic_auth$fn__1352.invoke(client.clj:230)
+              clj_http.client$wrap_accept$fn__1327.invoke(client.clj:184)
+              clj_http.client$wrap_accept_encoding$fn__1333.invoke(client.clj:195)
+              clj_http.client$wrap_content_type$fn__1322.invoke(client.clj:176)
+              clj_http.client$wrap_form_params$fn__1367.invoke(client.clj:257)
+              clj_http.client$wrap_method$fn__1362.invoke(client.clj:245)
+              clj_http.cookies$wrap_cookies$fn__876.invoke(cookies.clj:116)
+              clj_http.client$wrap_unknown_host$fn__1377.invoke(client.clj:268)
+              janus.verify$verify_contract.invoke(verify.clj:82)
+              janus.verify$verify_service$fn__12722.invoke(verify.clj:93)
+              janus.verify$verify_service.invoke(verify.clj:94)
+              janus$unsafe_verify.invoke(janus.clj:11)
+              janus.test.janus_test$eval13026$fn__13027$fn__13028$fn__13029$fn__13030$fn__13031.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13026$fn__13027$fn__13028$fn__13029$fn__13030.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13026$fn__13027$fn__13028$fn__13029.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13026$fn__13027$fn__13028.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13026$fn__13027.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13026.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval12991.invoke(form-init2636497206829756094.clj:1)
+
+Stopped web server
+Started web server on port 8080
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:97)
+
+janus.test.janus-test> wrap-json-response
+#<json$wrap_json_response ring.middleware.json$wrap_json_response@2ef73b32>
+janus.test.janus-test> (defroutes dbg
+  (ANY "/dbg-count" [] dbg-resource))
+
+(def handler
+  (-> app
+      (wrap-trace :header :ui)))
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: defroutes in this context, compiling:(/private/var/folders/n2/ybvdt56942v3jd681mwphkm00000gn/T/form-init2636497206829756094.clj:1:1) 
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: wrap-trace in this context, compiling:(/private/var/folders/n2/ybvdt56942v3jd681mwphkm00000gn/T/form-init2636497206829756094.clj:6:7) 
+janus.test.janus-test> (defroutes dbg
+  (ANY "/dbg-count" [] dbg-resource))
+
+(def handler
+  (-> app
+      (wrap-trace :header :ui)))
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: defroutes in this context, compiling:(/private/var/folders/n2/ybvdt56942v3jd681mwphkm00000gn/T/form-init2636497206829756094.clj:1:1) 
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: wrap-trace in this context, compiling:(/private/var/folders/n2/ybvdt56942v3jd681mwphkm00000gn/T/form-init2636497206829756094.clj:6:7) 
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [true ctx]
+                                  )
+                    :handle-created (fn [ctx] {:status :awesome})))))
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [true ctx]
+                                  )
+                    :handle-created (fn [ctx] {:status :awesome})))))
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [true ctx]
+                                  )
+                    :handle-created (fn [ctx] {:status :awesome})))))
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [true ctx]
+                                  )
+                    :handle-created (fn [ctx] {:status (slurp (get-in ctx [:request :body]))})))))
+	     
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [false ctx]
+                                  )
+                    :handle-created (fn [ctx] {:status (slurp (get-in ctx [:request :body]))})))))
+	     
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [false ctx]
+                                  )
+                    :handle-created (fn [ctx] {:status (slurp (get-in ctx [:request]))})))))
+	     
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [false ctx]
+                                  )
+                    :handle-created (fn [ctx] {:status  (get-in ctx [:request])})))))
+	     
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test> read-
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: read- in this context, compiling:(/private/var/folders/n2/ybvdt56942v3jd681mwphkm00000gn/T/form-init2636497206829756094.clj:1:926) 
+Stopped web server
+Started web server on port 3000
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:33)
+    Expected: ["simple JSON service" :succeeded]
+      Actual: org.apache.http.conn.HttpHostConnectException: Connection to http://localhost:8080 refused
+              org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:158)
+              org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:149)
+              org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:121)
+              org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:573)
+              org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:425)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:820)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:754)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:732)
+              clj_http.core$request.invoke(core.clj:217)
+              clj_http.client$wrap_query_params$fn__1347.invoke(client.clj:216)
+              clj_http.client$wrap_user_info$fn__1357.invoke(client.clj:240)
+              clj_http.client$wrap_url$fn__1372.invoke(client.clj:262)
+              clj_http.client$wrap_redirects$fn__1286.invoke(client.clj:55)
+              clj_http.client$wrap_decompression$fn__1295.invoke(client.clj:79)
+              clj_http.client$wrap_input_coercion$fn__1312.invoke(client.clj:164)
+              clj_http.client$wrap_output_coercion$fn__1301.invoke(client.clj:88)
+              clj_http.client$wrap_exceptions$fn__1276.invoke(client.clj:35)
+              clj_http.client$wrap_basic_auth$fn__1352.invoke(client.clj:230)
+              clj_http.client$wrap_accept$fn__1327.invoke(client.clj:184)
+              clj_http.client$wrap_accept_encoding$fn__1333.invoke(client.clj:195)
+              clj_http.client$wrap_content_type$fn__1322.invoke(client.clj:176)
+              clj_http.client$wrap_form_params$fn__1367.invoke(client.clj:257)
+              clj_http.client$wrap_method$fn__1362.invoke(client.clj:245)
+              clj_http.cookies$wrap_cookies$fn__876.invoke(cookies.clj:116)
+              clj_http.client$wrap_unknown_host$fn__1377.invoke(client.clj:268)
+              janus.verify$verify_contract.invoke(verify.clj:82)
+              janus.verify$verify_service$fn__12722.invoke(verify.clj:93)
+              janus.verify$verify_service.invoke(verify.clj:94)
+              janus$unsafe_verify.invoke(janus.clj:11)
+              janus.test.janus_test$eval13235$fn__13236$fn__13237$fn__13238$fn__13239$fn__13240.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13235$fn__13236$fn__13237$fn__13238$fn__13239.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13235$fn__13236$fn__13237$fn__13238.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13235$fn__13236$fn__13237.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13235$fn__13236.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13235.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13218.invoke(form-init2636497206829756094.clj:1)
+
+Stopped web server
+Started web server on port 3000
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:48)
+    Expected: ["simple JSON service" :failed [["GET document" :failed ["Expected \"10\" to match regex [a-z], at path $.features[*]"]]]]
+      Actual: org.apache.http.conn.HttpHostConnectException: Connection to http://localhost:8080 refused
+              org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:158)
+              org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:149)
+              org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:121)
+              org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:573)
+              org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:425)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:820)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:754)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:732)
+              clj_http.core$request.invoke(core.clj:217)
+              clj_http.client$wrap_query_params$fn__1347.invoke(client.clj:216)
+              clj_http.client$wrap_user_info$fn__1357.invoke(client.clj:240)
+              clj_http.client$wrap_url$fn__1372.invoke(client.clj:262)
+              clj_http.client$wrap_redirects$fn__1286.invoke(client.clj:55)
+              clj_http.client$wrap_decompression$fn__1295.invoke(client.clj:79)
+              clj_http.client$wrap_input_coercion$fn__1312.invoke(client.clj:164)
+              clj_http.client$wrap_output_coercion$fn__1301.invoke(client.clj:88)
+              clj_http.client$wrap_exceptions$fn__1276.invoke(client.clj:35)
+              clj_http.client$wrap_basic_auth$fn__1352.invoke(client.clj:230)
+              clj_http.client$wrap_accept$fn__1327.invoke(client.clj:184)
+              clj_http.client$wrap_accept_encoding$fn__1333.invoke(client.clj:195)
+              clj_http.client$wrap_content_type$fn__1322.invoke(client.clj:176)
+              clj_http.client$wrap_form_params$fn__1367.invoke(client.clj:257)
+              clj_http.client$wrap_method$fn__1362.invoke(client.clj:245)
+              clj_http.cookies$wrap_cookies$fn__876.invoke(cookies.clj:116)
+              clj_http.client$wrap_unknown_host$fn__1377.invoke(client.clj:268)
+              janus.verify$verify_contract.invoke(verify.clj:82)
+              janus.verify$verify_service$fn__12722.invoke(verify.clj:93)
+              janus.verify$verify_service.invoke(verify.clj:94)
+              janus$unsafe_verify.invoke(janus.clj:11)
+              janus.test.janus_test$eval13253$fn__13254$fn__13255$fn__13256$fn__13257$fn__13258.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13253$fn__13254$fn__13255$fn__13256$fn__13257.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13253$fn__13254$fn__13255$fn__13256.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13253$fn__13254$fn__13255.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13253$fn__13254.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13253.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13218.invoke(form-init2636497206829756094.clj:1)
+
+Stopped web server
+Started web server on port 8080
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:97)
+Stopped web server
+Started web server on port 3000
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:33)
+    Expected: ["simple JSON service" :succeeded]
+      Actual: org.apache.http.conn.HttpHostConnectException: Connection to http://localhost:8080 refused
+              org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:158)
+              org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:149)
+              org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:121)
+              org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:573)
+              org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:425)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:820)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:754)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:732)
+              clj_http.core$request.invoke(core.clj:217)
+              clj_http.client$wrap_query_params$fn__1347.invoke(client.clj:216)
+              clj_http.client$wrap_user_info$fn__1357.invoke(client.clj:240)
+              clj_http.client$wrap_url$fn__1372.invoke(client.clj:262)
+              clj_http.client$wrap_redirects$fn__1286.invoke(client.clj:55)
+              clj_http.client$wrap_decompression$fn__1295.invoke(client.clj:79)
+              clj_http.client$wrap_input_coercion$fn__1312.invoke(client.clj:164)
+              clj_http.client$wrap_output_coercion$fn__1301.invoke(client.clj:88)
+              clj_http.client$wrap_exceptions$fn__1276.invoke(client.clj:35)
+              clj_http.client$wrap_basic_auth$fn__1352.invoke(client.clj:230)
+              clj_http.client$wrap_accept$fn__1327.invoke(client.clj:184)
+              clj_http.client$wrap_accept_encoding$fn__1333.invoke(client.clj:195)
+              clj_http.client$wrap_content_type$fn__1322.invoke(client.clj:176)
+              clj_http.client$wrap_form_params$fn__1367.invoke(client.clj:257)
+              clj_http.client$wrap_method$fn__1362.invoke(client.clj:245)
+              clj_http.cookies$wrap_cookies$fn__876.invoke(cookies.clj:116)
+              clj_http.client$wrap_unknown_host$fn__1377.invoke(client.clj:268)
+              janus.verify$verify_contract.invoke(verify.clj:82)
+              janus.verify$verify_service$fn__12722.invoke(verify.clj:93)
+              janus.verify$verify_service.invoke(verify.clj:94)
+              janus$unsafe_verify.invoke(janus.clj:11)
+              janus.test.janus_test$eval13311$fn__13312$fn__13313$fn__13314$fn__13315$fn__13316.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13311$fn__13312$fn__13313$fn__13314$fn__13315.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13311$fn__13312$fn__13313$fn__13314.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13311$fn__13312$fn__13313.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13311$fn__13312.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13311.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13294.invoke(form-init2636497206829756094.clj:1)
+
+Stopped web server
+Started web server on port 3000
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:48)
+    Expected: ["simple JSON service" :failed [["GET document" :failed ["Expected \"10\" to match regex [a-z], at path $.features[*]"]]]]
+      Actual: org.apache.http.conn.HttpHostConnectException: Connection to http://localhost:8080 refused
+              org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:158)
+              org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:149)
+              org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:121)
+              org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:573)
+              org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:425)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:820)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:754)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:732)
+              clj_http.core$request.invoke(core.clj:217)
+              clj_http.client$wrap_query_params$fn__1347.invoke(client.clj:216)
+              clj_http.client$wrap_user_info$fn__1357.invoke(client.clj:240)
+              clj_http.client$wrap_url$fn__1372.invoke(client.clj:262)
+              clj_http.client$wrap_redirects$fn__1286.invoke(client.clj:55)
+              clj_http.client$wrap_decompression$fn__1295.invoke(client.clj:79)
+              clj_http.client$wrap_input_coercion$fn__1312.invoke(client.clj:164)
+              clj_http.client$wrap_output_coercion$fn__1301.invoke(client.clj:88)
+              clj_http.client$wrap_exceptions$fn__1276.invoke(client.clj:35)
+              clj_http.client$wrap_basic_auth$fn__1352.invoke(client.clj:230)
+              clj_http.client$wrap_accept$fn__1327.invoke(client.clj:184)
+              clj_http.client$wrap_accept_encoding$fn__1333.invoke(client.clj:195)
+              clj_http.client$wrap_content_type$fn__1322.invoke(client.clj:176)
+              clj_http.client$wrap_form_params$fn__1367.invoke(client.clj:257)
+              clj_http.client$wrap_method$fn__1362.invoke(client.clj:245)
+              clj_http.cookies$wrap_cookies$fn__876.invoke(cookies.clj:116)
+              clj_http.client$wrap_unknown_host$fn__1377.invoke(client.clj:268)
+              janus.verify$verify_contract.invoke(verify.clj:82)
+              janus.verify$verify_service$fn__12722.invoke(verify.clj:93)
+              janus.verify$verify_service.invoke(verify.clj:94)
+              janus$unsafe_verify.invoke(janus.clj:11)
+              janus.test.janus_test$eval13329$fn__13330$fn__13331$fn__13332$fn__13333$fn__13334.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13329$fn__13330$fn__13331$fn__13332$fn__13333.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13329$fn__13330$fn__13331$fn__13332.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13329$fn__13330$fn__13331.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13329$fn__13330.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13329.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13294.invoke(form-init2636497206829756094.clj:1)
+
+Stopped web server
+Started web server on port 8080
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:97)
+
+janus.test.janus-test> (ns foobaa)
+nil
+foobaa> (use 'liberator.core)
+nil
+foobaa>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [false ctx]
+                                  )
+                    :handle-created (fn [ctx] {:status  (get-in ctx [:request])})))))
+	     
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: serve-response-new in this context, compiling:(/private/var/folders/n2/ybvdt56942v3jd681mwphkm00000gn/T/form-init2636497206829756094.clj:1:13) 
+foobaa> 
+#<Namespace janus.test.janus-test>
+janus.test.janus-test> (serve* (wrap-json-response (create-handler (response {:1 1}))))
+Stopped web server
+Started web server on port 3000
+nil
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [false ctx]
+                                  )
+                    :handle-created (fn [ctx] {:status  (get-in ctx [:request])})))))
+	     
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [false ctx] 
+                                  )
+                    :handle-created (fn [ctx] {:status  (get-in ctx [:request])})))))
+	     
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test>            (serve-response-new
+            (routes
+             (ANY "/" []
+                  (resource
+                   :available-media-types ["application/json" "text/json"]
+                   :allowed-methods [:post]
+                   :handle-ok (fn [ctx] "foo")))))
+	    
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [false ::data] 
+                                  )
+                    :handle-created (fn [ctx] ::data)))))
+	     
+	     
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [true ::data] 
+                                  )
+                    :handle-created (fn [ctx] "It is alive"))))\\
+	     
+	     
+Stopped web server
+Started web server on port 8080
+nil
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [true ::data] 
+                                  )
+                    :handle-created (fn [ctx] "It is alive")))))
+		    
+	     
+	     
+		    
+Stopped web server
+Started web server on port 8080
+nil
+Stopped web server
+Started web server on port 3000
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:33)
+    Expected: ["simple JSON service" :succeeded]
+      Actual: org.apache.http.conn.HttpHostConnectException: Connection to http://localhost:8080 refused
+              org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:158)
+              org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:149)
+              org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:121)
+              org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:573)
+              org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:425)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:820)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:754)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:732)
+              clj_http.core$request.invoke(core.clj:217)
+              clj_http.client$wrap_query_params$fn__1347.invoke(client.clj:216)
+              clj_http.client$wrap_user_info$fn__1357.invoke(client.clj:240)
+              clj_http.client$wrap_url$fn__1372.invoke(client.clj:262)
+              clj_http.client$wrap_redirects$fn__1286.invoke(client.clj:55)
+              clj_http.client$wrap_decompression$fn__1295.invoke(client.clj:79)
+              clj_http.client$wrap_input_coercion$fn__1312.invoke(client.clj:164)
+              clj_http.client$wrap_output_coercion$fn__1301.invoke(client.clj:88)
+              clj_http.client$wrap_exceptions$fn__1276.invoke(client.clj:35)
+              clj_http.client$wrap_basic_auth$fn__1352.invoke(client.clj:230)
+              clj_http.client$wrap_accept$fn__1327.invoke(client.clj:184)
+              clj_http.client$wrap_accept_encoding$fn__1333.invoke(client.clj:195)
+              clj_http.client$wrap_content_type$fn__1322.invoke(client.clj:176)
+              clj_http.client$wrap_form_params$fn__1367.invoke(client.clj:257)
+              clj_http.client$wrap_method$fn__1362.invoke(client.clj:245)
+              clj_http.cookies$wrap_cookies$fn__876.invoke(cookies.clj:116)
+              clj_http.client$wrap_unknown_host$fn__1377.invoke(client.clj:268)
+              janus.verify$verify_contract.invoke(verify.clj:82)
+              janus.verify$verify_service$fn__12722.invoke(verify.clj:93)
+              janus.verify$verify_service.invoke(verify.clj:94)
+              janus$unsafe_verify.invoke(janus.clj:11)
+              janus.test.janus_test$eval13605$fn__13606$fn__13607$fn__13608$fn__13609$fn__13610.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13605$fn__13606$fn__13607$fn__13608$fn__13609.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13605$fn__13606$fn__13607$fn__13608.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13605$fn__13606$fn__13607.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13605$fn__13606.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13605.invoke(janus_test.clj:30)
+              janus.test.janus_test$eval13588.invoke(form-init2636497206829756094.clj:1)
+
+Stopped web server
+Started web server on port 3000
+
+FAIL "Can verify a single contract for a running service" at (janus_test.clj:48)
+    Expected: ["simple JSON service" :failed [["GET document" :failed ["Expected \"10\" to match regex [a-z], at path $.features[*]"]]]]
+      Actual: org.apache.http.conn.HttpHostConnectException: Connection to http://localhost:8080 refused
+              org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:158)
+              org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:149)
+              org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:121)
+              org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:573)
+              org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:425)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:820)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:754)
+              org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:732)
+              clj_http.core$request.invoke(core.clj:217)
+              clj_http.client$wrap_query_params$fn__1347.invoke(client.clj:216)
+              clj_http.client$wrap_user_info$fn__1357.invoke(client.clj:240)
+              clj_http.client$wrap_url$fn__1372.invoke(client.clj:262)
+              clj_http.client$wrap_redirects$fn__1286.invoke(client.clj:55)
+              clj_http.client$wrap_decompression$fn__1295.invoke(client.clj:79)
+              clj_http.client$wrap_input_coercion$fn__1312.invoke(client.clj:164)
+              clj_http.client$wrap_output_coercion$fn__1301.invoke(client.clj:88)
+              clj_http.client$wrap_exceptions$fn__1276.invoke(client.clj:35)
+              clj_http.client$wrap_basic_auth$fn__1352.invoke(client.clj:230)
+              clj_http.client$wrap_accept$fn__1327.invoke(client.clj:184)
+              clj_http.client$wrap_accept_encoding$fn__1333.invoke(client.clj:195)
+              clj_http.client$wrap_content_type$fn__1322.invoke(client.clj:176)
+              clj_http.client$wrap_form_params$fn__1367.invoke(client.clj:257)
+              clj_http.client$wrap_method$fn__1362.invoke(client.clj:245)
+              clj_http.cookies$wrap_cookies$fn__876.invoke(cookies.clj:116)
+              clj_http.client$wrap_unknown_host$fn__1377.invoke(client.clj:268)
+              janus.verify$verify_contract.invoke(verify.clj:82)
+              janus.verify$verify_service$fn__12722.invoke(verify.clj:93)
+              janus.verify$verify_service.invoke(verify.clj:94)
+              janus$unsafe_verify.invoke(janus.clj:11)
+              janus.test.janus_test$eval13623$fn__13624$fn__13625$fn__13626$fn__13627$fn__13628.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13623$fn__13624$fn__13625$fn__13626$fn__13627.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13623$fn__13624$fn__13625$fn__13626.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13623$fn__13624$fn__13625.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13623$fn__13624.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13623.invoke(janus_test.clj:44)
+              janus.test.janus_test$eval13588.invoke(form-init2636497206829756094.clj:1)
+
+Stopped web server
+Started web server on port 8080
+
+WORK TO DO "Should verify that a post is possible" at (janus_test.clj:97)
+
+janus.test.janus-test>             (serve-response-new
+             (routes
+              (ANY "/" []
+                   (resource
+                    :available-media-types ["application/json" "text/json"]
+                    :allowed-methods [:post]
+                    :malformed? (fn [ctx] (println ctx) [true ::data] 
+                                  )
+                    :handle-created (fn [ctx] "It is alive")))))
+	     
+		    

@@ -107,11 +107,10 @@
 ;; I don't think need to as data is clj data structure - going to retire some of this stuf
 ;; can then tighten up a lot of verif
 
-(defmethod check-clause :body [actual-response [_ body-clauses]]
+(defmethod check-clause :json-body [actual-response [_ body-clauses]]
   (let [ body (:body actual-response)
-        content-type (property-new :content-type body-clauses)
-        legacy-verifier (get-legacy-verifier content-type)
-        {:keys [parsed result message]} (safe-parse (property-new :content-type body-clauses) body)]
+        legacy-verifier (get-legacy-verifier :json)
+        {:keys [parsed result message]} (safe-parse :json body)]
     (if (= :success result)
       (concat
        (mapcat (partial check-body-clause parsed) body-clauses)
@@ -143,14 +142,12 @@
 (defn to-xml [tree]
   (xml/emit-str (vec-to-el tree)))
 
+;; not tested
 (defn body-from [contract context]
   (let [body-def (if (contains? contract :body)
-                   (:body contract)
-                   (:body context))]
-    (cond
-     (= (:type body-def) :string) (str (:data body-def))
-     (= (:type body-def) :json) (json/json-str (:data body-def))
-     (= (:type body-def) :xml) (to-xml (:data body-def)))))
+                   (:json-body contract)
+                   (:json-body context))]
+    (json/json-str (:data body-def))))
 
 (defn build-headers [headers]
   (zipmap (map :name headers) (map :value headers)))

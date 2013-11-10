@@ -122,8 +122,7 @@
              "http://localhost:8787/cities"
              (request (method :get))
              (response
-              (body
-               (content-type :json)
+              (json-body
                (should-have
                 :cities
                 (each

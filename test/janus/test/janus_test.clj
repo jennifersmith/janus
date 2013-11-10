@@ -42,8 +42,7 @@
                      (method :get)
                      (header "Content-Type" "application/json"))
                     (response
-                     (body                      
-                      (content-type :json)
+                     (json-body                      
                       (should-have :id (of-type :number))
                       (should-have :features (of-type :collection)
                                    (with-length-between 2 8)
@@ -65,8 +64,7 @@
                  (method :get)
                  (header "Content-Type" "application/json"))
                 (response
-                 (body
-                  (content-type :json)
+                 (json-body
                   (matching-jsonpath "$.features[*]" :matching #"[a-z]")))))
      (janus/unsafe-verify)
      (get-in [:results :c1 :errors]))
@@ -111,11 +109,10 @@
              (request
               (header "Content-Type" "application/json")
               (method :post)
-              (body :json
+              (json-body :json
                     {:something "not validated"}))
              (response
-              (body
-               (content-type :json)
+              (json-body
                (matching-jsonpath "$.origin"
                             :matching #"^[A-Z]{3,3}$")
                (matching-jsonpath "$.destination"
@@ -136,9 +133,7 @@
               (request
                (method :get)
                (header "Content-Type" "application/json"))
-              (response
-               (body
-                (content-type :json)))))
+              (response)))
    (janus/unsafe-verify)
    (get-in [:results :contract-foo]))
   => (contains [[:result :failed] 

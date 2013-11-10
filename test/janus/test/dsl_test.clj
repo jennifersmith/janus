@@ -40,12 +40,11 @@
 (fact "status creates a property containing the status"
             (status 105) => [:status 105])
 
-;; overloading 'body' in req and resp... will be dodgy 
 (fact "body creates a body object with a type and data or matching clauses"
-            (body (content-type :json) (equal-to {:sample "obj"}))
-            => [:body [[:content-type :json] [:equal-to {:sample "obj"}]]]
-            (body (matching-jsonpath "foo" :equal-to "foo")) 
-            => [:body [[:json-path "foo" :equal-to "foo"]]])
+            (json-body (equal-to {:sample "obj"}))
+            => [:json-body [[:equal-to {:sample "obj"}]]]
+            (json-body (equal-to "foo")) 
+            => [:json-body [[:equal-to "foo"]]])
 
 
 (fact "header creates a header"
@@ -81,5 +80,3 @@
 
 (fact "loading a DSL program"
             (construct-domain '(service "sample")) => {:name "sample", :contracts []})
-
-
