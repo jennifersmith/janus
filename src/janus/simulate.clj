@@ -33,7 +33,7 @@
 
 (defmulti build-response first)
 
-(defmethod build-response :body [expected]
+(defmethod build-response :json-body [expected]
   (fn [response]
     (assoc response
       :body (generate-data expected))))

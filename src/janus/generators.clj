@@ -42,7 +42,7 @@
 (defmethod generate-data :json-path [[_ path & matching-args]]
   (assoc-in {} (json-path-to-assoc-path path) (generate-data matching-args)))
 
-(defmethod generate-data :body [[_ clauses]]
+(defmethod generate-data :json-body [[_ clauses]]
   (apply merge (map generate-data clauses)))
 
 ;; TODO  : this is a massive hack we are basically going to map the subset of fns we support 
