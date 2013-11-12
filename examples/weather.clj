@@ -133,8 +133,7 @@
              (response
               (status 200)
               (header "content-type" "application/json;charset=UTF-8" )
-              (body
-               (content-type :json)
+              (json-body
                (should-have
                 :cities
                 (each

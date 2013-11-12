@@ -11,13 +11,12 @@
 
 (fact "Able to combine two different matchers to create a composite" 
       (generate-data
-       (body
-        (matching-jsonpath "$.name" :of-type :string)
-        (matching-jsonpath "$.temp" :of-type :number)))
+       (json-body
+        (should-have :name (of-type :string))
+        (should-have :temp (of-type :number))))
       => (contains [[:name string?] [:temp number?]]))
 
 ;; TODO: Object here means 'array'... well in the example anyway. Need to fix the dsl.
-
 
 (fact
  "can cope with should-haves"

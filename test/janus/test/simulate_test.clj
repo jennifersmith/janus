@@ -14,8 +14,7 @@
                       (header "content-type" "application/json"))
                      (response
                       (header "foo" "bar")
-                      (body
-                       (content-type :json)
+                      (json-body
                        (should-have :images
                                     (each
                                      (should-have :description (of-type :string))
