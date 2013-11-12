@@ -23,6 +23,7 @@
                                    [ring/ring-json "0.2.0"]
                                    [compojure "1.1.5"]
                                    [liberator "0.9.0"]
-                                   [org.clojure/tools.namespace "0.2.4"]]
+                                   [org.clojure/tools.namespace "0.2.4"]
+                                   [hiccup "1.0.4"]]
 }}
   :main janus)

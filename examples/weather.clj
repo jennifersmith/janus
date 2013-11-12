@@ -45,16 +45,33 @@
 ;; weather readings
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def city-data (atom nil))
-
-
-(defn reset-city-data! []
-  (swap! city-data (fn [_] [{:name "Melbourne" 
+(def default-cities [{:name "Melbourne" 
                    :temp 16 }
                   {:name "London" 
                    :temp 7 }
                   {:name "Chicago" 
-                   :temp 3}])))
+                   :temp 3}])
+
+(def city-data (atom default-cities))
+
+
+(defn reset-city-data! []
+  (swap! city-data (constantly default-cities)))
+
+(defn add-outlook! []
+  (swap! city-data (partial map #(assoc %2 :outlook %1)
+                            [{
+                              :today "Monsoon" 
+                              :tomorrow "Heat wave"} 
+                             {
+                              :today "Rain" 
+                              :tomorrow "More bloody rain"}
+                             {
+                              :today "High winds" 
+                              :tomorrow "High winds"}])))
+
+(defn remove-names! []
+  (swap! city-data (partial map #(dissoc % :name))))
 
 ;; (pprint city-data)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -74,45 +91,37 @@
                  (Thread/sleep sleep-time)        
                  (recur)))))))
 
-;; Simlate
-;; (crear-zipper -updaer
-
-
-
-
-
-
-
-
-
-
-
-;; START DEMO!
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Cities resource (liberator)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;(reset-city-data!)
 (defresource cities
   :available-media-types ["application/json"]
   :handle-ok (fn [ctx] {:cities @city-data}))
 
-;; serving up a city-data atom
-;; (pprint @city-data)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; start the weather service on port 8787
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn start-bobs-weather-service []
-  (let [routes (routes (ANY "/cities" [] cities))]
+(defresource cities-with-html
+  :available-media-types ["text/html"]
+  :handle-ok (fn [ctx] 
+               @city-data))
+(defn start-bobs-weather-service 
+  ([] (start-bobs-weather-service true)) 
+  ([browse]
+     (let [routes (routes (ANY "/cities" [] cities))]
+       (-> routes
+           (wrap-app)
+           (serve* 8787 true))
+       (when browse
+         (browse-bobs-weather-service))
+       (reset-city-data!)
+       (create-city-updater))))
+
+(defn start-bobs-weather-service-html-only []
+  (let [routes (routes (ANY "/cities" [] cities-with-html))]
     (-> routes
         (wrap-app)
         (serve* 8787 true))
-    (browse-bobs-weather-service)
-    (create-city-updater)))
+    (browse-bobs-weather-service)))
+
+;; START DEMO!
 
 ;;(start-bobs-weather-service)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Define our consumer contract for Bob's weather service
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def bobs-weather-service-contract
@@ -122,7 +131,10 @@
              "http://localhost:8787/cities"
              (request (method :get))
              (response
-              (json-body
+              (status 200)
+              (header "content-type" "application/json;charset=UTF-8" )
+              (body
+               (content-type :json)
                (should-have
                 :cities
                 (each
@@ -138,6 +150,41 @@
   (pprint
    (verify/verify-service bobs-weather-service-contract {})))
 ;; (verify-bobs-weather-serivce)
+
+;;;;;;;;;;;;;;;;;
+;; Now it meets the contract, let's think about consuming it to make a weather dashboard
+;;;;;;;;;;;;;;;;;
+
+(def browse-jens-weather-dashboard
+  (partial browse-url "http://localhost:3000/"))
+
+;; (browse-jens-weather-dashboard)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; If the service stops meeting the contract...
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; (remove-names!)
+;; (browse-bobs-weather-service)
+;; (browse-jens-weather-dashboard)
+;; (verify-bobs-weather-serivce)
+;; (reset-city-data!)
+;; (verify-bobs-weather-serivce)
+;; (start-bobs-weather-service-html-only)
+;; (verify-bobs-weather-serivce)
+
+;;;;;;;;;;;;;;;;;;;;
+;; If the service gets some additive changes
+;;;;;;;;;;;;;;;;;;;;
+
+;;(add-outlook!)
+;; (browse-bobs-weather-service)
+;; (verify-bobs-weather-serivce)
+;;(browse-bobs-weather-service)
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Clojurescript weather dashboard
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -147,39 +194,6 @@
 
 ;; (browse-jens-weather-dashboard)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; If the service stops meeting the contract...
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn remove-names []
-  (swap! city-data (partial map #(dissoc % :name))))
-
-;; (remove-names)
-;;;;;;;;;;;;;;
-;;; restore data
-;;;;;;;;;;;;;;;
-
-(defn restore-names []
-  (swap! city-data (partial map #(assoc %2 :name %1)  ["Melbourne" "London" "Chicago"] )))
-
-;; (restore-names)
-;; ;;(reset-city-data!)
-;;;;;;;;;;;;;;;;;;;;
-;; If the service gets some additive changes
-;;;;;;;;;;;;;;;;;;;;
-(defn add-outlook []
-  (swap! city-data (partial map #(assoc %2 :outlook %1)
-                            [{
-                              :today "Monsoon" 
-                              :tomorrow "Heat wave"}
-                             {
-                              :today "Rain" 
-                              :tomorrow "More bloody rain"}
-                             {
-                              :today "High winds" 
-                              :tomorrow "High winds"}])))
-;;(add-outlook)
-;;(browse-bobs-weather-service)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Calling out to the live API might be impractical - maybe costs $$ or is unreliable.
