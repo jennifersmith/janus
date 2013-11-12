@@ -42,6 +42,10 @@
   (fn [response]
     (assoc-in response [:headers name] value)))
 
+(defmethod build-response :status [[_ value]]
+  (fn [response]
+    (assoc response :status value)))
+
 (defn create-resource-for-contract [{expected-response-clauses :response expected-request :request}]
   (let [create-response (apply comp (map build-response expected-response-clauses))]
     (fn [request]

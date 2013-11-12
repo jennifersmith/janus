@@ -14,6 +14,7 @@
                       (header "content-type" "application/json"))
                      (response
                       (header "foo" "bar")
+                      (status 200)
                       (json-body
                        (should-have :images
                                     (each
