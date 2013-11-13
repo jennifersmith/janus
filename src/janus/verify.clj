@@ -101,6 +101,12 @@
     [(str "Expected " (excerpt actual) " to have length between " from " and " to)]
     []))
 
+(defmethod check-body-clause :in-range [actual [_ {:keys [min max]}]]
+  (cond
+   (not (number? actual)) [(str "Attempted to constrain range of " (excerpt actual) " which is not a number")]
+   (not (<= min actual max)) 
+   [(str "Expected " (excerpt actual) " to be between " min " and " max)]
+   :else []))
 
 (defmethod check-body-clause :each [values [_ clauses]]
   (flatten (for [value values clause clauses]

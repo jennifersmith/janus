@@ -45,3 +45,8 @@
                       (of-type :string)
                       (with-length-between 0 10)))) => (roughly 0 10))
 
+(fact "constrains numbers to the range you ask for"
+      (generate-data
+       (json-body 
+        (of-type :number) 
+        (with-range 0 10))) => (roughly 0 10))

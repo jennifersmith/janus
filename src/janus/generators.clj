@@ -13,8 +13,11 @@
   (let [sizer (create-sizer min-length max-length)]
     (generators/string generators/printable-ascii-char sizer)))
 
+(defn generate-number [{:keys [range] :or {:range [Integer/MIN_VALUE Integer/MAX_VALUE]}}]
+  (apply generators/uniform range))
+
 (def type->generator {:string generate-string
-                      :number (fn [params] (generators/int))
+                      :number generate-number
                       :any (fn [params] (generators/anything))})
 
 ;;=====
@@ -80,6 +83,10 @@
 (defmethod create-generator-spec :with-length-between [[_ min-length max-length]]
   (fn [current]
     (merge current {:type :array :min-length min-length :max-length max-length})))
+
+(defmethod create-generator-spec :in-range [[_ {:keys [min max]}]]
+  (fn [current]
+    (merge current {:type :generator :generator-type :number :range [min max]})))
 
 (defmethod create-generator-spec :each [[_ clauses]]
   (let [each-spec ((apply comp (map create-generator-spec clauses)) {})]

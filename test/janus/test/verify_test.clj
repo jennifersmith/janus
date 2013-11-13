@@ -64,6 +64,11 @@
       (check-body-clause "FarTooLong" [:all [[:predfn string? {:type :string}] [:with-length-between 1 5]]]) => ["Expected FarTooLong to have length between 1 and 5"])
 
 
+(fact "Constraining numerics to ranges" 
+      (check-body-clause 23 [:in-range {:min 20 :max 50}]) => empty?
+      (check-body-clause 1 [:in-range {:min 20 :max 50}]) => ["Expected 1 to be between 20 and 50"])
+(fact "Errors when checking range on non numeric"
+      (check-body-clause "foo" [:in-range {:min 20 :max 50}]) => ["Attempted to constrain range of foo which is not a number"])
 
 (fact "Each validates that the given is a coll and validates each against it"
       (check-body-clause [1,2,3] [:each [[:predfn number? {:type :number}]

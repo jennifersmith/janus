@@ -31,6 +31,8 @@
 
 (fact (of-type :number) => [:predfn number? {:type :number}])
 
+(fact (with-range 0 10) => [:in-range {:min 0 :max 10}])
+
 (fact "url creates a property containing the path"
             (url "path") => [:property {:name "url" :value "path"}])
 
@@ -76,7 +78,7 @@
                       :contracts [{:endpoint "/start", 
                                    :name "first contract", 
                                    :request [], :response []} 
-                                  {:name "second contract", :request [], :response []}]} )
+                                  {:name "second contract", :request [], :response []}]})
 
 (fact "loading a DSL program"
             (construct-domain '(service "sample")) => {:name "sample", :contracts []})

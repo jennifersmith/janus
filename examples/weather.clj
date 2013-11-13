@@ -225,8 +225,12 @@
                 :cities
                 (with-length-between 0 10)
                 (each
-                 (should-have :name (of-type :string ))
-                 (should-have :temp (of-type :number)))))))))
+                 (should-have :name 
+                              (of-type :string) 
+                              (with-length-between 5 20))
+                 (should-have :temp 
+                              (of-type :number)
+                              (with-range -5 45)))))))))
 
 (defn verify-bobs-weather-serivce-with-constraints []
   (pprint

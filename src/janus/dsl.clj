@@ -22,6 +22,9 @@
     (predfn-based-clause checker {:type type})
     (throw (new Exception (str "No matching type checking fn found for " type)))))
 
+(defn with-range [min max]
+  [:in-range {:min min :max max}])
+
 (defn should-have  [fn & subclauses]
   (fn-based-clause fn {:key fn} subclauses))
 
