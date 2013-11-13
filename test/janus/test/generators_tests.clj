@@ -32,12 +32,16 @@
       (count  (generate-data  (each 
                                     (of-type :number)))) =>  (roughly 0 65000))
 
-(fact "constraints to count you ask for"
+(fact "constraints vectors to count you ask for"
       (count (generate-data 
               (should-have :x
                (with-length-between 0 10)
                (each 
                 (of-type :number))))) => (roughly 0 10))
 
-(future-fact "constrains to the range you ask for ")
+(fact "constrains strings to the length you ask for"
+             (count (generate-data 
+                     (json-body
+                      (of-type :string)
+                      (with-length-between 0 10)))) => (roughly 0 10))
 

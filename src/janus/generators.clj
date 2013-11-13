@@ -4,11 +4,22 @@
             [clojure.walk :refer [prewalk]]))
 
 
+(defn create-sizer [min max]
+  (if (some nil? [min max])
+    generators/default-sizer
+    #(generators/uniform min max)))
 
-(def type->generator {:string (fn [& args] (generators/string)) 
-                      :number generators/int
-                      :any generators/anything
-                              :collection (fn [& args] [args])})
+(defn generate-string [{:keys [min-length max-length]}]
+  (let [sizer (create-sizer min-length max-length)]
+    (generators/string generators/printable-ascii-char sizer)))
+
+(def type->generator {:string generate-string
+                      :number (fn [params] (generators/int))
+                      :any (fn [params] (generators/anything))})
+
+;;=====
+
+(defmulti literal-generator :params)
 
 ;;;========
 
@@ -23,7 +34,7 @@
   (fn [current]
     (merge
      current
-     {:type :generator :generator (type->generator type)})))
+     {:type :generator :generator-type type})))
 
 (defmulti generate-from :type)
 
@@ -42,6 +53,7 @@
    {:context-type (keys context)  
     :context context 
     :subclauses clauses}))
+
 (defmethod create-generator-spec :fn [[_ keyword context clauses]]
   (create-generator-spec-from-fn-context 
    {:context-type (keys context)  
@@ -55,7 +67,7 @@
 
 (defmethod create-generator-spec-from-fn-context [:key] [{:keys [context subclauses]}]
   (let [value-clauses
-        ((apply comp (map create-generator-spec  subclauses)) { :type :any})
+        ((apply comp (map create-generator-spec  subclauses)) { :type :generator :generator-type :any})
         ]
     (fn [current]
       (let [with-type (merge current {:type :object})]
@@ -76,8 +88,8 @@
 
 (defmethod generate-from :default [x]  x)
 
-(defmethod generate-from :generator [{:keys [generator]}]
-  (generator))
+(defmethod generate-from :generator [{:keys [generator-type] :as params}]
+  ((type->generator generator-type) params))
 
 (defmethod generate-from :object [{:keys [property-keys properties]}]
   (zipmap property-keys properties))
@@ -85,4 +97,4 @@
 (defmethod generate-from :array [params ]
   (let [{:keys [each-value min-length max-length] } 
         (merge  {:max-length 1000 :min-length 0} params)]
-    (take (- max-length min-length) (repeat each-value) )))
+    (take (- max-length min-length) (repeat each-value))))
