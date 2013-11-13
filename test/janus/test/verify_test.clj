@@ -4,7 +4,7 @@
   [:require [clj-http.client :as http]
    [clojure.data.json :as json]])
 
-(unfinished )
+
 
 (fact "a header clause should allow equality and matching checks"
       (check-clause {:headers {"ct" "blah"}} 
@@ -58,6 +58,12 @@
       (check-body-clause {:foo 1 :bar 1} [:all [[:fn :foo :foo] [:fn :bar :bar]]]) => []
       (check-body-clause {:fo 1 :bar 1} [:all [[:fn :foo :foo] [:fn :bar :bar]]]) => ["Expected :foo to be non-nil on {:bar 1, :fo 1}"]
       (check-body-clause {:foo 1 :ba 1} [:all [[:fn :foo :foo] [:fn :bar :bar]]]) => ["Expected :bar to be non-nil on {:foo 1, :ba 1}"])
+
+(fact "Length constraints apply to strings as well as colls" 
+      (check-body-clause "Short" [:all [[:predfn string? {:type :string}] [:with-length-between 1 20]]]) => empty?
+      (check-body-clause "FarTooLong" [:all [[:predfn string? {:type :string}] [:with-length-between 1 5]]]) => ["Expected FarTooLong to have length between 1 and 5"])
+
+
 
 (fact "Each validates that the given is a coll and validates each against it"
       (check-body-clause [1,2,3] [:each [[:predfn number? {:type :number}]
