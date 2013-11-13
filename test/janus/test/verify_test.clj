@@ -10,7 +10,9 @@
       (check-clause {:headers {"ct" "blah"}} 
                     [:header {:name "ct" :value "blah"}]) => empty?
       (check-clause {:headers {"ct" "foo"}} 
-                    [:header {:name "ct" :value "bar"}]) => ["Expected header 'ct' to equal 'bar'. Got 'foo'."])
+                    [:header {:name "ct" :value "bar"}]) => ["Expected header 'ct' to equal 'bar'. Got 'foo'."]
+      (check-clause {:headers {}} 
+                    [:header {:name "ct" :value "bar"}]) => ["Expected header 'ct' to equal 'bar', but was missing."])
 
 (fact "special handling for content type header - should ignore encoding"
       (check-clause {:headers {"content-type" "foo/bar;charset=whatever"}} 

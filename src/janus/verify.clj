@@ -56,14 +56,31 @@
 ;; todo : only can check header equality...
 
 (defn clean-header-value [value]
-  (clojure.string/replace value #";charset=.*", ""))
+  (when value
+    (clojure.string/replace value #";charset=.*", "")))
 
 (defmethod check-clause :header [response [_ {:keys [name value]}]]
   (let [ actual (-> response :headers (get name))
         for-comparison (map clean-header-value [actual value])]
-   (if (apply not= for-comparison)
-     [(str "Expected header '" name "' to equal '" value "'. Got '" actual "'.")]
-     [])))
+    
+   (cond 
+    (not actual) 
+    [(str
+      "Expected header '"
+      name
+      "' to equal '"
+      value
+      "', but was missing.")]
+    (apply not= for-comparison) 
+    [(str
+      "Expected header '"
+      name
+      "' to equal '"
+      value
+      "'. Got '"
+      actual
+      "'.")]
+     :else [])))
 
 ;;=======
 (def check-body-clause nil)
