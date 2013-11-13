@@ -5,7 +5,8 @@
             [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
             [ring.util.response :refer [response]]
             [ring.middleware.cors :refer [wrap-cors]]
-            [janus.generators :refer [generate-data]])
+            [janus.generators :refer [generate-data]]
+            [clojure.data.json :as json])
   (:import [java.io Closeable]))
 
 ;; copied from verify... basically saying this needs to be a map not tuples!
@@ -25,8 +26,7 @@
 
 (defn create-resource-handler [endpoints resources]
   (let [routes (apply routes (map #(ANY (fixup-endpoint %1) [] %2) endpoints resources))]
-    (-> routes
-        (wrap-json-response))))
+    routes))
 
 ;; for when I can be bothered to log properly
 (defn log [& message] (println (apply str "[SIMULATOR]:\t" message)))
@@ -36,7 +36,7 @@
 (defmethod build-response :json-body [expected]
   (fn [response]
     (assoc response
-      :body (generate-data expected))))
+      :body (json/write-str (generate-data expected)))))
 
 (defmethod build-response :header [[_ {:keys [name value]}]]
   (fn [response]

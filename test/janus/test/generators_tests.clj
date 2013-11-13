@@ -3,12 +3,6 @@
            [janus.generators :refer :all]
            [janus.dsl :refer :all]))
 
-(fact "Able to work back from pieces of the DSL to generate response for basic datatypes"
-      (generate-data (matching-jsonpath "$.name" :of-type :string)) 
-      => (contains [[:name string?]])
-      (generate-data (matching-jsonpath "$.temp" :of-type :number))       
-      => (contains [[:temp number?]]))
-
 (fact "Able to combine two different matchers to create a composite" 
       (generate-data
        (json-body
@@ -35,12 +29,15 @@
                                          (contains (contains [[:foo string?] [:bar number?]]))))
 
 (fact "if body does not constrain, add stupidly high constraints and uniformly distribute"
-      (count (generate-data  (each 
-                              (of-type :number)))) =>  (roughly 0 65000))
+      (count  (generate-data  (each 
+                                    (of-type :number)))) =>  (roughly 0 65000))
 
-(future-fact "constraints to count you ask for"
-      (count (generate-data (each [0 100]
-                             (of-type :number)))) => (roughly 0 100))
+(fact "constraints to count you ask for"
+      (count (generate-data 
+              (should-have :x
+               (with-length-between 0 10)
+               (each 
+                (of-type :number))))) => (roughly 0 10))
 
 (future-fact "constrains to the range you ask for ")
 

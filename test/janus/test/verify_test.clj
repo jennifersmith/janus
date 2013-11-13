@@ -7,9 +7,14 @@
 (unfinished )
 
 (fact "a header clause should allow equality and matching checks"
-      (check-clause {:headers {"ct" "blah"}} [:header {:name "ct" :value "blah"}]) => empty?
-      (check-clause {:headers {"ct" "foo"}} [:header {:name "ct" :value "bar"}]) => ["Expected header 'ct' to equal 'bar'. Got 'foo'."])
+      (check-clause {:headers {"ct" "blah"}} 
+                    [:header {:name "ct" :value "blah"}]) => empty?
+      (check-clause {:headers {"ct" "foo"}} 
+                    [:header {:name "ct" :value "bar"}]) => ["Expected header 'ct' to equal 'bar'. Got 'foo'."])
 
+(fact "special handling for content type header - should ignore encoding"
+      (check-clause {:headers {"content-type" "foo/bar;charset=whatever"}} 
+                    [:header {:name "content-type" :value "foo/bar"}]) => empty?)
 (fact "reponse with different status or ct fails"
       
       (validate-response [[:status 201]]  {:result :ok :response {:status 200}}  {}) => ["Expected status 201. Got status 200"]

@@ -132,7 +132,7 @@
              (request (method :get))
              (response
               (status 200)
-              (header "content-type" "application/json;charset=UTF-8" )
+              (header "content-type" "application/json" )
               (json-body
                (should-have
                 :cities
@@ -205,4 +205,36 @@
 
 
 ;; (simulate-bobs-weather-service)
-;; 
+;; (verify-bobs-weather-serivce)
+;; (browse-jens-weather-dashboard) 
+
+
+;; Add some constraints
+
+(def bobs-weather-service-contract-with-constraints
+  (service 
+   "Bob's weather service"
+   (contract :city_list
+             "http://localhost:8787/cities"
+             (request (method :get))
+             (response
+              (status 200)
+              (header "content-type" "application/json" )
+              (json-body
+               (should-have
+                :cities
+                (with-length-between 0 10)
+                (each
+                 (should-have :name (of-type :string ))
+                 (should-have :temp (of-type :number)))))))))
+
+(defn verify-bobs-weather-serivce-with-constraints []
+  (pprint
+   (verify/verify-service bobs-weather-service-contract-with-constraints {})))
+
+(defn simulate-bobs-weather-service-with-constraints []
+  (simulate bobs-weather-service-contract-with-constraints :port 8787 :client-origin "http://localhost:3000")
+  (browse-bobs-weather-service))
+
+
+;; (verify-bobs-weather-serivce-with-constraints)

@@ -1,11 +1,13 @@
 (ns janus.generators
   (:require [clojure.data.generators :as generators]
-            [json-path.parser]))
+            [json-path.parser]
+            [clojure.walk :refer [prewalk]]))
 
 
 
 (def type->generator {:string (fn [& args] (generators/string)) 
-                      :number (fn [& args] (generators/int))
+                      :number generators/int
+                      :any generators/anything
                               :collection (fn [& args] [args])})
 
 (defmulti generate-data-from-fn-context :context-type)
@@ -62,8 +64,83 @@
 ;; Assumption : all result in KVPs ... seems like main usecase so far
 ;; also lazy... so need to probably put in some limits somewhere
 (defmethod generate-data :each [[_ clauses]]
-  (take (generators/uniform 0 65000)
+  (take (generators/uniform 0 1000)
         (repeatedly
          #(reduce merge (map generate-data clauses)))))
 
+;;;========
 
+;; redoing the massive hack. Now we are translating tuples of constraints into maps. 
+;; because we have to control the evaluation of each one - for e.g. length has to come after the each specificier - so push into a map and then pass that to generator
+;; This is proving that a tree might be better model for a contract
+
+;;!!
+
+
+(defn literal-generator-spec [type]
+  (fn [current]
+    (merge
+     current
+     {:type :generator :generator (type->generator type)})))
+
+(defmulti generate-from :type)
+
+(defmulti create-generator-spec first)
+(defmulti create-generator-spec-from-fn-context :context-type)
+
+(defn generate-data [body-constraints]
+  (let [generator-spec (create-generator-spec body-constraints)]
+    (prewalk generate-from (generator-spec {}))))
+
+(defmethod create-generator-spec :any [& _] 
+  (literal-generator-spec :any))
+
+(defmethod create-generator-spec :predfn [[_ keyword context clauses]]
+  (create-generator-spec-from-fn-context 
+   {:context-type (keys context)  
+    :context context 
+    :subclauses clauses}))
+(defmethod create-generator-spec :fn [[_ keyword context clauses]]
+  (create-generator-spec-from-fn-context 
+   {:context-type (keys context)  
+    :context context 
+    :subclauses clauses}))
+
+(defmethod create-generator-spec :json-body [[_ clauses]]
+  (fn [current]
+    ((apply comp (map create-generator-spec clauses)) current)))
+
+
+(defmethod create-generator-spec-from-fn-context [:key] [{:keys [context subclauses]}]
+  (let [value-clauses
+        ((apply comp (map create-generator-spec  subclauses)) { :type :any})
+        ]
+    (fn [current]
+      (let [with-type (merge current {:type :object})]
+        (merge-with concat with-type {:properties [value-clauses]
+                                      :property-keys [(:key context)]})))))
+
+(defmethod create-generator-spec-from-fn-context [:type] [{:keys [context]}]
+  (literal-generator-spec (:type context)))
+
+(defmethod create-generator-spec :with-length-between [[_ min-length max-length]]
+  (fn [current]
+    (merge current {:type :array :min-length min-length :max-length max-length})))
+
+(defmethod create-generator-spec :each [[_ clauses]]
+  (let [each-spec ((apply comp (map create-generator-spec clauses)) {})]
+    (fn [current]
+      (merge current {:type :array :each-value each-spec}))))
+
+(defmethod generate-from :default [x]  x)
+
+(defmethod generate-from :generator [{:keys [generator]}]
+  (generator))
+
+(defmethod generate-from :object [{:keys [property-keys properties]}]
+  (zipmap property-keys properties))
+
+(defmethod generate-from :array [params ]
+  (let [{:keys [each-value min-length max-length] } 
+        (merge  {:max-length 1000 :min-length 0} params)]
+    (take (- max-length min-length) (repeat each-value) )))

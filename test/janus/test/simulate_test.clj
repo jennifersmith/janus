@@ -14,9 +14,11 @@
                       (header "content-type" "application/json"))
                      (response
                       (header "foo" "bar")
+                      (header "content-type" "application/weird")
                       (status 200)
                       (json-body
                        (should-have :images
+                                    (with-length-between 0 10)
                                     (each
                                      (should-have :description (of-type :string))
                                      (should-have :url (of-type :string)))))))))
