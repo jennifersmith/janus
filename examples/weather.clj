@@ -1,7 +1,7 @@
 (ns weather
   (:require 
    [clojure.java.browse :refer [browse-url]]
-      [clojure.pprint :refer [pprint]]
+   [clojure.pprint :refer [pprint]]
    [weather-service]
    [janus.dsl :refer :all]
    [janus.verify :refer [verify-service]]
@@ -29,7 +29,7 @@
                (should-have :cities
                 (each
                  (should-have :name (of-type :string))
-                 (should-have :temp (of-type :number)))))))))
+   (should-have :temp (of-type :number)))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Let's check the service against the contract
@@ -40,6 +40,7 @@
    (verify-service bobs-weather-service-contract {})))
 ;; (verify-bobs-weather-serivce)
 
+
 ;;;;;;;;;;;;;;;;;
 ;; Now it meets the contract, let's think about consuming it to make a weather dashboard
 ;;;;;;;;;;;;;;;;;
@@ -47,8 +48,8 @@
 (def browse-jens-weather-dashboard
   (partial browse-url "http://localhost:3000/"))
 
+;; (weather-service/start false)
 ;; (browse-jens-weather-dashboard)
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; If the service stops meeting the contract...
@@ -64,7 +65,7 @@
 ;; what about something more fundamental like the content type
   (weather-service/start-html-only)
   (verify-bobs-weather-serivce)
-  (weather-service/start))
+  (weather-service/start false))
 
 ;;;;;;;;;;;;;;;;;;;;
   ;; If the service gets some additive changes
@@ -80,15 +81,30 @@
 ;; As we know what the consumer needs we can simulate it
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(def bobs-weather-service-contract
+  (service 
+   "Bob's weather service"
+   (contract :city_list
+             "http://localhost:8787/cities"
+             (request (method :get))
+             (response
+              (status 200)
+              (header "content-type" "application/json" )
+              (json-body
+               (should-have :cities
+                (each
+                 (should-have :name (of-type :string))
+                 (should-have :temp (of-type :number)))))))))
 (defn simulate-bobs-weather-service []
   (simulate bobs-weather-service-contract 
-            :port 8787 :client-origin "http://localhost:3000")
+            :port 8787 
+            :client-origin "http://localhost:3000")
   (weather-service/browse))
 
-
-;; (simulate-bobs-weather-service)
-;; (verify-bobs-weather-serivce)
-;; (browse-jens-weather-dashboard) 
+(comment
+  (simulate-bobs-weather-service)
+  (verify-bobs-weather-serivce)
+  (browse-jens-weather-dashboard)) 
 
 
 ;; This is where a contract might start to get you to think about 
@@ -130,7 +146,7 @@
 
 (comment
   ;; First of all try and verify the real service
-  (weather-service/start false)
+  (weather-service/start)
   (verify-bobs-weather-serivce-with-constraints)
   ;; now the simulation
   (simulate-bobs-weather-service-with-constraints)
