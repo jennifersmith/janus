@@ -1,18 +1,23 @@
 (ns janus.test.verify-test
   [:use janus.verify
+   janus.dsl
    midje.sweet]
   [:require [clj-http.client :as http]
    [clojure.data.json :as json]])
 
+(defn response-with-header [k v]
+  {:headers {k v}})
 
-
-(fact "a header clause should allow equality and matching checks"
-      (check-clause {:headers {"ct" "blah"}} 
-                    [:header {:name "ct" :value "blah"}]) => empty?
-      (check-clause {:headers {"ct" "foo"}} 
-                    [:header {:name "ct" :value "bar"}]) => ["Expected header 'ct' to equal 'bar'. Got 'foo'."]
-      (check-clause {:headers {}} 
-                    [:header {:name "ct" :value "bar"}]) => ["Expected header 'ct' to equal 'bar', but was missing."])
+(tablular
+ (fact "a header clause should allow equality and matching checks"
+       (check-clause ?response (header ?k ?v) => ?expected)
+       (check-clause (response-with-header "ct" "blah")  (header "ct" "blah")) => empty?
+       
+       (check-clause {:headers {"ct" "foo"}} 
+                     [:header {:name "ct" :value "bar"}]) => ["Expected header 'ct' to equal 'bar'. Got 'foo'."]
+                     (check-clause {:headers {}} 
+                                   [:header {:name "ct" :value "bar"}]) => ["Expected header 'ct' to equal 'bar', but was missing."])
+)
 
 (fact "special handling for content type header - should ignore encoding"
       (check-clause {:headers {"content-type" "foo/bar;charset=whatever"}} 
