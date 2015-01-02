@@ -7,23 +7,32 @@
 
 (defn response-with-header [k v]
   {:headers {k v}})
+(defn response-with-status [status]
+  {:status status})
 
-(tablular
+(tabular
  (fact "a header clause should allow equality and matching checks"
-       (check-clause ?response (header ?k ?v) => ?expected)
-       (check-clause (response-with-header "ct" "blah")  (header "ct" "blah")) => empty?
-       
-       (check-clause {:headers {"ct" "foo"}} 
-                     [:header {:name "ct" :value "bar"}]) => ["Expected header 'ct' to equal 'bar'. Got 'foo'."]
-                     (check-clause {:headers {}} 
-                                   [:header {:name "ct" :value "bar"}]) => ["Expected header 'ct' to equal 'bar', but was missing."])
-)
+       (check-clause ?response (header ?k ?v)) => ?expected)
+ ?response ?k ?v ?expected
+ (response-with-header "ct" "blah")  "ct" "blah" empty?
+ (response-with-header "ct" "foo")  "ct" "bar" ["Expected header 'ct' to equal 'bar'. Got 'foo'."]
+ (response-with-header "another" "header")  "ct" "foo"
+ ["Expected header 'ct' to equal 'foo', but was missing."] )
 
 (fact "special handling for content type header - should ignore encoding"
-      (check-clause {:headers {"content-type" "foo/bar;charset=whatever"}} 
+      (check-clause (response-with-header "contenty-type" "foo/bar;charset=foo")
                     [:header {:name "content-type" :value "foo/bar"}]) => empty?)
+
+(tabular
+ (fact "a status clause should allow equality and matching checks"
+       (check-clause (response-with-status actual-status) (status ?status)) => ?expected)
+ ?response ?k ?v ?expected
+ (response-with-header "ct" "blah")  "ct" "blah" empty?
+ (response-with-header "ct" "foo")  "ct" "bar" ["Expected header 'ct' to equal 'bar'. Got 'foo'."]
+ (response-with-header "another" "header")  "ct" "foo"
+ ["Expected header 'ct' to equal 'foo', but was missing."] )
+
 (fact "reponse with different status or ct fails"
-      
       (validate-response [[:status 201]]  {:result :ok :response {:status 200}}  {}) => ["Expected status 201. Got status 200"]
       
       (validate-response  [[:header {:name "ct" :value "text/html"}]] {:result :ok :response {:headers {"ct" "app/json"}}} {})
